@@ -4,12 +4,16 @@ import { GENDER_OPTIONS, UNKNOWN } from '../src/constants/user';
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('user', function (table) {
-    table.uuid('user_id').notNullable().primary().defaultTo(knex.raw('uuid_generate_v4()'));
+    table
+      .uuid('user_id')
+      .notNullable()
+      .primary()
+      .defaultTo(knex.raw('uuid_generate_v4()'));
     table.text('nme').notNullable().defaultTo('');
     table.text('email_address').notNullable();
     table.text('phone_nbr').notNullable();
     table.text('icon_url').nullable();
-    table.string('phone_nbr_verify_code',6).nullable();
+    table.string('phone_nbr_verify_code', 6).nullable();
     table.timestamp('created_tms').notNullable().defaultTo(knex.fn.now());
     table.timestamp('last_login_tms').notNullable().defaultTo(knex.fn.now());
     table.boolean('onboard').defaultTo(false);
@@ -19,5 +23,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-    return knex.schema.dropTableIfExists('user');
+  return knex.schema.dropTableIfExists('user');
 }
