@@ -3,11 +3,18 @@ type User{
     user_id: String
 }
 
-type Mutation{
-    signUp: User
+type loginResult{
+    success: Boolean!
+    result: String
+    message: String
 }
-extend type Query{
-    oneUser: User
+
+type Query{
+    me: User
+}
+
+type Mutation{
+    login(account:String!): loginResult
 }
 
 `;

@@ -1,3 +1,3 @@
 import * as user from './user';
-
-export { user };
+import * as message from './message';
+export default { message, ...user };

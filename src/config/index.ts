@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-require('dotenv').config({ path: __dirname + '/.env' });
+require('dotenv').config({ path: __dirname + '/../../.env' });
 
 const envConfig = Object.assign({}, process.env);
 const defaultEnv = {
