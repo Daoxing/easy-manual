@@ -9,14 +9,19 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable()
       .primary()
       .defaultTo(knex.raw('uuid_generate_v4()'));
-    table.text('nme').notNullable().defaultTo('');
-    table.text('email_address').notNullable();
-    table.text('phone_nbr').notNullable();
+    table.text('nme').nullable().defaultTo('');
+    table.text('email_address').nullable().unique();
+    table.text('phone_nbr').nullable().unique();
     table.text('icon_url').nullable();
-    table.string('phone_nbr_verify_code', 6).nullable();
+    table.string('phone_nbr_verify_code', 6).nullable().defaultTo(null);
+    table
+      .timestamp('phone_nbr_verify_code_created_tms')
+      .nullable()
+      .defaultTo(null);
     table.timestamp('created_tms').notNullable().defaultTo(knex.fn.now());
+    table.timestamp('updated_tms').notNullable().defaultTo(knex.fn.now());
     table.timestamp('last_login_tms').notNullable().defaultTo(knex.fn.now());
-    table.boolean('onboard').defaultTo(false);
+    table.boolean('accept_terms').defaultTo(false);
     table.boolean('deleted').defaultTo(false);
     table.enu('gender', GENDER_OPTIONS).defaultTo(UNKNOWN);
   });

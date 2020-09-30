@@ -3,7 +3,7 @@ type Group{
     group_id: String
 }
 
-type Query{
+extend type Query{
     oneGroup: Group
 }
 
