@@ -10,15 +10,56 @@ const defaultLoginResult = {
   goto: '/verify-code',
 };
 
+const verifyCodeResult = {
+  success: false,
+  result: {},
+  message: message.INTERNAL_ERROR,
+};
+
 const allowPhoneLocale: any[] = ['zh-CN'];
 export default {
+  GENDERENUM: {
+    MALE: 'male',
+    FEMALE: 'female',
+    UNKNOWN: 'unknown',
+  },
   Query: {
-    me: () => {
-      return { user_id: 'bbbbb' };
+    me: async (parent, args, { requestUser }, info) => {
+      return DBconnection(user_table)
+        .where({ user_id: requestUser.user_id })
+        .select('*');
+    },
+    verifyCode: async (parent, { code }, { requestUser }, info) => {
+      const selectResult = await DBconnection(user_table)
+        .where({ user_id: requestUser.user_id, phone_nbr_verify_code: code })
+        .select('*');
+      if (selectResult.length === 0) {
+        verifyCodeResult.result = await DBconnection(user_table)
+          .where({ user_id: requestUser.user_id })
+          .select('*');
+        verifyCodeResult.message = message.WRONG_CODE;
+        return verifyCodeResult;
+      }
+      const phoneNbrCodeUpdate = {
+        phone_nbr_verify_code: null,
+        phone_nbr_verify_code_created_tms: null,
+      };
+      const updateResult = await DBconnection(user_table)
+        .where({ user_id: requestUser.user_id, phone_nbr_verify_code: code })
+        .update(phoneNbrCodeUpdate)
+        .returning('*');
+      if (updateResult.length !== 0) {
+        verifyCodeResult.success = true;
+        verifyCodeResult.result = updateResult[0];
+        verifyCodeResult.message = message.VERIFY_SUCCESS;
+      }
+      return verifyCodeResult;
     },
   },
   Mutation: {
     login: async (parent, { account }, context, info) => {
+      // TODO: SEND EMAIL AND TEXT MESSAGE
+      // TODO: VERIFY EMAIL AND PHONE NUMBER IS AVAILABLE
       if ((account as string).length === 0) {
         defaultLoginResult.message = message.NOT_FOUND_ACCOUNT;
         return defaultLoginResult;
