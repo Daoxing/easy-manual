@@ -3,7 +3,9 @@ import { gql } from 'apollo-server';
 import group from './group';
 import user from './user';
 
-let types = ``;
+let types = `
+scalar Date
+`;
 let queries = {};
 let mutations = {};
 let otherResolvers = {};
