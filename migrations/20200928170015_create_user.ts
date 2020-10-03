@@ -1,5 +1,4 @@
 import * as Knex from 'knex';
-import { v4 as uuidv4 } from 'uuid';
 import { GENDER_OPTIONS, UNKNOWN } from '../src/constants/user';
 
 export async function up(knex: Knex): Promise<void> {
