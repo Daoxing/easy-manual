@@ -5,4 +5,6 @@ export const message = {
   VERIFY_SUCCESS: 'Verify Success.',
   WRONG_CODE: 'Wrong Code!',
   INTERNAL_ERROR: 'Internal Error!',
+  INVALID_INPUT: 'Invalid Input!',
+  CREATE_SUCCESS: 'create success!',
 };
