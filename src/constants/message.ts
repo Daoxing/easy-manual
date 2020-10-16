@@ -6,5 +6,11 @@ export const message = {
   WRONG_CODE: 'Wrong Code!',
   INTERNAL_ERROR: 'Internal Error!',
   INVALID_INPUT: 'Invalid Input!',
+  EMAIL_EXIST: 'Email has been used!',
+  WRONG_EMAIL_FORMAT: 'The email format is wrong!',
+  WRONG_PHONE_NBR_FORMAT: 'The phone number format is wrong!',
+  PHONE_NBR_EXIST: 'Phone number has been used!',
+  NAME_SHOULD_NOT_NULL: 'Name cannot be empty!',
+  UPDATE_SUCCESS: 'Update Success!',
   CREATE_SUCCESS: 'create success!',
 };

@@ -1,6 +1,6 @@
 import { specialRegex } from '../../constants/common';
 import { message } from '../../constants/message';
-import { TABLE_GROUP, USER_IN_GROUP } from '../../constants/table_name';
+import { TABLE_GROUP, TABLE_USER_IN_GROUP } from '../../constants/table_name';
 import { DBconnection } from '../../database';
 
 const createGroupResult = {
@@ -20,9 +20,9 @@ export default {
       return DBconnection.select('group.*')
         .from(TABLE_GROUP)
         .leftJoin(
-          USER_IN_GROUP,
+          TABLE_USER_IN_GROUP,
           `${TABLE_GROUP}.group_id`,
-          `${USER_IN_GROUP}.group_id`,
+          `${TABLE_USER_IN_GROUP}.group_id`,
         )
         .where({ user_id: requestUser.user_id });
     },
@@ -49,7 +49,7 @@ export default {
 
           const { created_user_id, group_id } = insertGroupResult[0];
 
-          const insertUserInGroupResult = await trx(USER_IN_GROUP)
+          const insertUserInGroupResult = await trx(TABLE_USER_IN_GROUP)
             .insert({ group_id, user_id: created_user_id })
             .returning('*');
 
