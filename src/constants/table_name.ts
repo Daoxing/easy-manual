@@ -1,3 +1,3 @@
-export const user_table = 'user';
+export const TABLE_USER = 'user';
 export const TABLE_GROUP = 'group';
-export const USER_IN_GROUP = 'user_in_group';
+export const TABLE_USER_IN_GROUP = 'user_in_group';

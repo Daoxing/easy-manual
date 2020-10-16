@@ -8,7 +8,7 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable()
       .primary()
       .defaultTo(knex.raw('uuid_generate_v4()'));
-    table.text('nme').nullable().defaultTo('');
+    table.text('user_nme').nullable().defaultTo('');
     table.text('email_address').nullable().unique();
     table.text('phone_nbr').nullable().unique();
     table.text('icon_url').nullable();

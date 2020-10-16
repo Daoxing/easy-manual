@@ -1,8 +1,9 @@
 import validator from 'validator';
 import { message } from '../../constants/message';
-import { user_table } from '../../constants/table_name';
+import { TABLE_USER } from '../../constants/table_name';
 import { DBconnection } from '../../database';
 import * as jwt from 'jsonwebtoken';
+import _ = require('lodash');
 const defaultLoginResult = {
   success: false,
   result: '',
@@ -16,6 +17,12 @@ const verifyCodeResult = {
   message: message.INTERNAL_ERROR,
 };
 
+const UpdateUserResult = {
+  success: false,
+  result: null,
+  message: message.INTERNAL_ERROR,
+};
+
 const allowPhoneLocale: any[] = ['zh-CN'];
 export default {
   GENDERENUM: {
@@ -25,16 +32,18 @@ export default {
   },
   Query: {
     me: async (parent, args, { requestUser }, info) => {
-      return DBconnection(user_table)
+      return DBconnection(TABLE_USER)
         .where({ user_id: requestUser.user_id })
         .select('*');
     },
+  },
+  Mutation: {
     verifyCode: async (parent, { code }, { requestUser }, info) => {
-      const selectResult = await DBconnection(user_table)
+      const selectResult = await DBconnection(TABLE_USER)
         .where({ user_id: requestUser.user_id, phone_nbr_verify_code: code })
         .select('*');
       if (selectResult.length === 0) {
-        verifyCodeResult.result = await DBconnection(user_table)
+        verifyCodeResult.result = await DBconnection(TABLE_USER)
           .where({ user_id: requestUser.user_id })
           .select('*');
         verifyCodeResult.message = message.WRONG_CODE;
@@ -44,7 +53,7 @@ export default {
         phone_nbr_verify_code: null,
         phone_nbr_verify_code_created_tms: null,
       };
-      const updateResult = await DBconnection(user_table)
+      const updateResult = await DBconnection(TABLE_USER)
         .where({ user_id: requestUser.user_id, phone_nbr_verify_code: code })
         .update(phoneNbrCodeUpdate)
         .returning('*');
@@ -55,8 +64,6 @@ export default {
       }
       return verifyCodeResult;
     },
-  },
-  Mutation: {
     login: async (parent, { account }, context, info) => {
       // TODO: SEND EMAIL AND TEXT MESSAGE
       // TODO: VERIFY EMAIL AND PHONE NUMBER IS AVAILABLE
@@ -74,7 +81,7 @@ export default {
         defaultLoginResult.message = message.WRONG_ACCOUNT;
         return defaultLoginResult;
       }
-      const queryResult = await DBconnection(user_table)
+      const queryResult = await DBconnection(TABLE_USER)
         .where(accountInfo)
         .select('*');
       try {
@@ -85,11 +92,11 @@ export default {
         let inserOrUpdate;
         if (queryResult.length === 0) {
           accountInfo = Object.assign(accountInfo, phoneNbrCodeUpdate);
-          inserOrUpdate = await DBconnection(user_table)
+          inserOrUpdate = await DBconnection(TABLE_USER)
             .insert(accountInfo)
             .returning('*');
         } else {
-          inserOrUpdate = await DBconnection(user_table)
+          inserOrUpdate = await DBconnection(TABLE_USER)
             .where(accountInfo)
             .update(phoneNbrCodeUpdate)
             .returning('*');
@@ -107,6 +114,59 @@ export default {
       }
 
       return defaultLoginResult;
+    },
+    updateUser: async (parent, { userInfo }, { requestUser }, info) => {
+      const { email_address, phone_nbr, user_nme } = userInfo;
+      if (_.isEmpty(email_address) && _.isEmpty(phone_nbr)) {
+        UpdateUserResult.message = message.INVALID_INPUT;
+        return UpdateUserResult;
+      }
+      // TODO: user_name should replace all special characters.
+      // TODO: check email and phone number is working.
+      if (!_.isUndefined(user_nme) && _.isEmpty(user_nme)) {
+        UpdateUserResult.message = message.NAME_SHOULD_NOT_NULL;
+        return UpdateUserResult;
+      }
+      if (email_address) {
+        if (!validator.isEmail(email_address)) {
+          UpdateUserResult.message = message.WRONG_EMAIL_FORMAT;
+          return UpdateUserResult;
+        }
+        const checkEmailResult = await DBconnection(TABLE_USER)
+          .where({ email_address })
+          .andWhereNot({ user_id: requestUser.user_id })
+          .select('*')
+          .first();
+        if (checkEmailResult) {
+          UpdateUserResult.message = message.EMAIL_EXIST;
+          return UpdateUserResult;
+        }
+      }
+      if (phone_nbr) {
+        if (!validator.isMobilePhone(`${phone_nbr}`, 'zh-CN')) {
+          UpdateUserResult.message = message.WRONG_PHONE_NBR_FORMAT;
+          return UpdateUserResult;
+        }
+        const checkEmailResult = await DBconnection(TABLE_USER)
+          .where({ phone_nbr })
+          .andWhereNot({ user_id: requestUser.user_id })
+          .select('*')
+          .first();
+        if (checkEmailResult) {
+          UpdateUserResult.message = message.EMAIL_EXIST;
+          return UpdateUserResult;
+        }
+      }
+      const updateResult = await DBconnection(TABLE_USER)
+        .where({ user_id: requestUser.user_id })
+        .update(userInfo)
+        .returning('*');
+      if (updateResult) {
+        UpdateUserResult.success = true;
+        UpdateUserResult.result = updateResult[0];
+        UpdateUserResult.message = message.UPDATE_SUCCESS;
+      }
+      return UpdateUserResult;
     },
   },
 };

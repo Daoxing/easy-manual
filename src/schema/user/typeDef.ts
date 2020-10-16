@@ -1,7 +1,7 @@
 export default `
 type User{
-    user_id: String
-    nme:String,
+    user_id: String!
+    user_nme:String,
     email_address:String,
     phone_nbr:String,
     icon_url:String,
@@ -33,13 +33,27 @@ type verifyCodeResult{
     message: String
 }
 
+type UpdateUserResult{
+    success: Boolean!
+    result: User
+    message: String
+}
+
+input UpdateUserInput{
+    user_nme:String,
+    email_address:String,
+    phone_nbr:String,
+    gender:GENDERENUM,
+}
+
 type Query{
     me: User
-    verifyCode(code:String!): verifyCodeResult
 }
 
 type Mutation{
     login(account:String!): loginResult
+    verifyCode(code:String!): verifyCodeResult
+    updateUser(userInfo:UpdateUserInput!): UpdateUserResult
 }
 
 `;

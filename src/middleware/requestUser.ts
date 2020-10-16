@@ -1,6 +1,6 @@
 export const requestUser = {
   user_id: '88a63233-bc70-4aa3-a77c-255b08609bd9',
-  nme: 'daoxing li',
+  user_nme: 'daoxing li',
   email_address: 'lidaoxing1990@gmail.com',
   phone_nbr: '18092634596',
   icon_url: '',
