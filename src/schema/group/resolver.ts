@@ -57,7 +57,7 @@ export default {
             insertGroupResult.length === 0 ||
             insertUserInGroupResult.length === 0
           ) {
-            createGroupResult.message = 'Insert Fail!';
+            createGroupResult.message = message.CREATE_FAIL;
             return createGroupResult;
           }
 

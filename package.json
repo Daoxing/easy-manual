@@ -11,7 +11,7 @@
     "migrate:up": "ts-node ./node_modules/knex/bin/cli.js migrate:up",
     "migrate:down": "ts-node ./node_modules/knex/bin/cli.js migrate:rollback",
     "migrate:make": "node ./node_modules/knex/bin/cli.js migrate:make ",
-    "dev": "ts-node ./src/index.ts "
+    "dev": "nodemon -e ts,tsx --exec ts-node ./src/index.ts "
   },
   "repository": {
     "type": "git",
