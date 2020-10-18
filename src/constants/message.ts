@@ -1,6 +1,8 @@
 export const message = {
   LOGIN_SUCCESS: 'Login Success!',
   NOT_FOUND_ACCOUNT: 'Cannot find the account!',
+  NOT_FOUND_GROUP: 'Cannot find the group!',
+  NOT_FOUND_ARTICLE: 'Cannot find the Article!',
   WRONG_ACCOUNT: 'Please provide correct account!',
   VERIFY_SUCCESS: 'Verify Success.',
   WRONG_CODE: 'Wrong Code!',
@@ -12,5 +14,9 @@ export const message = {
   PHONE_NBR_EXIST: 'Phone number has been used!',
   NAME_SHOULD_NOT_NULL: 'Name cannot be empty!',
   UPDATE_SUCCESS: 'Update Success!',
-  CREATE_SUCCESS: 'create success!',
+  UPDATE_FAIL: 'Update Fail!',
+  CREATE_SUCCESS: 'Create success!',
+  CREATE_FAIL: 'Create Fail!',
+  SUCCESS: 'Success!',
+  NO_PERMISSION: 'You have no permission to access this file',
 };

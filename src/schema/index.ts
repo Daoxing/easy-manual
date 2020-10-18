@@ -2,6 +2,7 @@ import { gql } from 'apollo-server';
 
 import group from './group';
 import user from './user';
+import article from './article';
 
 let types = `
 scalar Date
@@ -9,7 +10,7 @@ scalar Date
 let queries = {};
 let mutations = {};
 let otherResolvers = {};
-[group, user].forEach((e) => {
+[group, user, article].forEach((e) => {
   const { typeDef, resolver } = e;
   types = types.concat(typeDef);
   const { Query = {}, Mutation = {}, ...others } = resolver as any;
