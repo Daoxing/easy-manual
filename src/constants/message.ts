@@ -4,6 +4,7 @@ export const message = {
   NOT_FOUND_GROUP: 'Cannot find the group!',
   NOT_FOUND_ARTICLE: 'Cannot find the Article!',
   NOT_FOUND_CHAPTER: 'Cannot find the Chapter!',
+  NOT_FOUND_COMMENT: 'Cannot find the Comment!',
   WRONG_ACCOUNT: 'Please provide correct account!',
   VERIFY_SUCCESS: 'Verify Success.',
   WRONG_CODE: 'Wrong Code!',
