@@ -6,6 +6,7 @@ type Article{
     created_tms: Date
     updated_tms: Date
     group:Group
+    first_chapters: [Chapter]
 }
 
 type getArticleResult{
@@ -15,6 +16,18 @@ type getArticleResult{
 }
 
 type createArticleResult{
+    success: Boolean
+    result: Article
+    message: String
+}
+
+type updateArticleResult{
+    success: Boolean
+    result: Article
+    message: String
+}
+
+type deleteArticleResult{
     success: Boolean
     result: Article
     message: String
@@ -37,7 +50,8 @@ extend type Query{
 
 extend type Mutation{
     createArticle(articleInfo:createArticleInput): createArticleResult
-    updateArticle(articleInfo:updateArticleInput): createArticleResult
+    updateArticle(articleInfo:updateArticleInput): updateArticleResult
+    deleteArticle(articleId:String!):deleteArticleResult
 }
 
 `;
