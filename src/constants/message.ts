@@ -3,6 +3,7 @@ export const message = {
   NOT_FOUND_ACCOUNT: 'Cannot find the account!',
   NOT_FOUND_GROUP: 'Cannot find the group!',
   NOT_FOUND_ARTICLE: 'Cannot find the Article!',
+  NOT_FOUND_CHAPTER: 'Cannot find the Chapter!',
   WRONG_ACCOUNT: 'Please provide correct account!',
   VERIFY_SUCCESS: 'Verify Success.',
   WRONG_CODE: 'Wrong Code!',
@@ -17,6 +18,7 @@ export const message = {
   UPDATE_FAIL: 'Update Fail!',
   CREATE_SUCCESS: 'Create success!',
   CREATE_FAIL: 'Create Fail!',
+  DELETE_FAIL: 'Delete Fail!',
   SUCCESS: 'Success!',
   NO_PERMISSION: 'You have no permission to access this file',
 };

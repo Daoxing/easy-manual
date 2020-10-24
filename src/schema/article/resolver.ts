@@ -3,6 +3,7 @@ import { specialRegex } from '../../constants/common';
 import { message } from '../../constants/message';
 import {
   TABLE_ARTICLE,
+  TABLE_CHAPTER,
   TABLE_GROUP,
   TABLE_USER_IN_GROUP,
 } from '../../constants/table_name';
@@ -26,6 +27,12 @@ const updateArticleResult = {
   message: message.INTERNAL_ERROR,
 };
 
+const deleteArticleResult = {
+  success: false,
+  result: {},
+  message: message.INTERNAL_ERROR,
+};
+
 export default {
   Article: {
     created_user: (parent, args, { requestUser }, info) => {
@@ -34,6 +41,15 @@ export default {
     group: ({ group_id }, args, { requestUser }, info) => {
       return group_id
         ? DBconnection(TABLE_GROUP).select('*').where({ group_id }).first()
+        : null;
+    },
+    first_chapters: ({ article_id }, args, { requestUser }, info) => {
+      return article_id
+        ? DBconnection(TABLE_CHAPTER)
+            .select('*')
+            .where({ article_id, parent_chapter_id: null })
+            .orderBy('order', 'asc')
+            .returning('*')
         : null;
     },
   },
@@ -143,6 +159,33 @@ export default {
         updateArticleResult.message = message.UPDATE_FAIL;
       }
       return updateArticleResult;
+    },
+    deleteArticle: async (
+      parent,
+      { articleId: article_id },
+      { requestUser },
+      info,
+    ) => {
+      const article = await DBconnection(TABLE_ARTICLE)
+        .select('*')
+        .where({ article_id })
+        .first();
+      if (!article) {
+        deleteArticleResult.message = message.NOT_FOUND_CHAPTER;
+        return deleteArticleResult;
+      }
+      const deleteChapter = await DBconnection(TABLE_ARTICLE)
+        .delete()
+        .where({ article_id })
+        .first();
+      if (!deleteChapter) {
+        deleteArticleResult.message = message.DELETE_FAIL;
+        return deleteArticleResult;
+      }
+      deleteArticleResult.result = article;
+      deleteArticleResult.success = true;
+      deleteArticleResult.message = message.SUCCESS;
+      return deleteArticleResult;
     },
   },
 };
