@@ -39,6 +39,12 @@ type UpdateUserResult{
     message: String
 }
 
+type searchUsersByNameResult{
+    success: Boolean!
+    result: [User!]
+    message: String
+}
+
 input UpdateUserInput{
     user_nme:String,
     email_address:String,
@@ -46,8 +52,14 @@ input UpdateUserInput{
     gender:GENDERENUM,
 }
 
+input searchUsersByNameInput{
+    name:String!
+    group_id:ID
+}
+
 type Query{
     me: User
+    searchUsersByName(searchInfo:searchUsersByNameInput):searchUsersByNameResult
 }
 
 type Mutation{
