@@ -1,9 +1,10 @@
 import validator from 'validator';
 import { message } from '../../constants/message';
-import { TABLE_USER } from '../../constants/table_name';
+import { TABLE_USER, TABLE_USER_IN_GROUP } from '../../constants/table_name';
 import { DBconnection } from '../../database';
 import * as jwt from 'jsonwebtoken';
 import _ = require('lodash');
+import { specialRegex } from '../../constants/common';
 const defaultLoginResult = {
   success: false,
   result: '',
@@ -19,7 +20,13 @@ const verifyCodeResult = {
 
 const UpdateUserResult = {
   success: false,
-  result: null,
+  result: {},
+  message: message.INTERNAL_ERROR,
+};
+
+const searchUsersByNameResult = {
+  success: false,
+  result: [],
   message: message.INTERNAL_ERROR,
 };
 
@@ -35,6 +42,43 @@ export default {
       return DBconnection(TABLE_USER)
         .where({ user_id: requestUser.user_id })
         .select('*');
+    },
+    searchUsersByName: async (
+      parent,
+      { searchInfo },
+      { requestUser },
+      info,
+    ) => {
+      const { name = '', group_id = null } = searchInfo;
+      name.replace(specialRegex, '');
+      if (_.isEmpty(name)) {
+        searchUsersByNameResult.message = message.INVALID_INPUT;
+        return searchUsersByNameResult;
+      }
+      let users = [];
+      if (group_id) {
+        users = await DBconnection.select(`${TABLE_USER}.*`)
+          .from(TABLE_USER_IN_GROUP)
+          .leftJoin(
+            TABLE_USER,
+            `${TABLE_USER_IN_GROUP}.user_id`,
+            `${TABLE_USER}.user_id`,
+          )
+          .where({ group_id })
+          .andWhereRaw(
+            `POSITION( LOWER(${name}) IN LOWER(${TABLE_USER}.user_nme))>0`,
+          )
+          .orderBy(`${TABLE_USER}.user_nme`, 'asc');
+      } else {
+        users = await DBconnection.select('*')
+          .from(TABLE_USER)
+          .whereRaw(`POSITION( LOWER(${name}) IN LOWER(user_nme))>0`)
+          .orderBy(`user_nme`, 'asc');
+      }
+      searchUsersByNameResult.success = true;
+      searchUsersByNameResult.message = message.SUCCESS;
+      searchUsersByNameResult.result = users;
+      return searchUsersByNameResult;
     },
   },
   Mutation: {

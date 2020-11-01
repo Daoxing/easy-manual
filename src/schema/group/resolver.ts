@@ -8,6 +8,7 @@ import {
   TABLE_USER_IN_GROUP,
 } from '../../constants/table_name';
 import { DBconnection } from '../../database';
+import { graphqlResult } from '../types';
 
 const createGroupResult = {
   success: false,
@@ -39,9 +40,14 @@ const rejectUserToGroupResult = {
   message: message.INTERNAL_ERROR,
 };
 
-const deleteGroupResult = {
+const deleteGroupResult: graphqlResult = {
   success: false,
   result: {},
+  message: message.INTERNAL_ERROR,
+};
+const searchGroupsByNameResult = {
+  success: false,
+  result: [],
   message: message.INTERNAL_ERROR,
 };
 
@@ -100,14 +106,20 @@ export default {
         )
         .where({ user_id: requestUser.user_id, approved: true });
     },
-    searchGroupByName: async (parent, { name }, context, info) => {
+    searchGroupByName: async (parent, { searchInfo }, context, info) => {
+      const { name = '' } = searchInfo;
       name.replace(specialRegex, '');
       if (name.length === 0) {
-        return [];
+        searchGroupsByNameResult.message = message.INVALID_INPUT;
+        return searchGroupsByNameResult;
       }
-      return DBconnection(TABLE_GROUP).select('*').whereRaw(`
+      const groups = await DBconnection(TABLE_GROUP).select('*').whereRaw(`
       POSITION (LOWER('${name}') IN LOWER(group_nme))>0
       `);
+      searchGroupsByNameResult.success = true;
+      searchGroupsByNameResult.result = groups;
+      searchGroupsByNameResult.message = message.SUCCESS;
+      return searchGroupsByNameResult;
     },
   },
   Mutation: {

@@ -54,6 +54,13 @@ type deleteGroupResult{
     result: Group
 }
 
+type searchGroupsByNameResult{
+    success: Boolean!
+    result: [Group!]
+    message: String
+}
+
+
 input createGroupInput{
     group_nme:String!
     group_intro:String
@@ -80,9 +87,13 @@ input rejectUserToGroupInput{
     group_id:ID!
 }
 
+input searchGroupsByNameInput{
+    name:String!
+}
+
 extend type Query{
     myGroups:[Group!]
-    searchGroupByName(name:String!):[Group!]
+    searchGroupsByNameInput(searchInfo:searchGroupsByNameInput):searchGroupsByNameResult
 } 
 
 extend type Mutation{
