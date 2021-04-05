@@ -1,31 +1,8 @@
-import validator from 'validator';
-import { specialRegex } from '../../constants/common';
 import { message } from '../../constants/message';
-import {
-  TABLE_ARTICLE,
-  TABLE_CHAPTER,
-  TABLE_GROUP,
-  TABLE_USER_IN_GROUP,
-} from '../../constants/table_name';
+import { TABLE_ARTICLE, TABLE_GROUP } from '../../constants/table_name';
 import { DBconnection } from '../../database';
-
-const getArticleResult = {
-  success: false,
-  result: {},
-  message: message.INTERNAL_ERROR,
-};
-
-const createArticleResult = {
-  success: false,
-  result: {},
-  message: message.INTERNAL_ERROR,
-};
-
-const updateArticleResult = {
-  success: false,
-  result: {},
-  message: message.INTERNAL_ERROR,
-};
+import { ArticleService } from '../../services';
+import { ISchemaResult } from '../../types';
 
 const deleteArticleResult = {
   success: false,
@@ -43,149 +20,80 @@ export default {
         ? DBconnection(TABLE_GROUP).select('*').where({ group_id }).first()
         : null;
     },
-    first_chapters: ({ article_id }, args, { requestUser }, info) => {
-      return article_id
-        ? DBconnection(TABLE_CHAPTER)
-            .select('*')
-            .where({ article_id, parent_chapter_id: null })
-            .orderBy('order', 'asc')
-            .returning('*')
-        : null;
-    },
   },
   Query: {
-    getArticle: async (
-      parent,
-      { articleId: article_id },
-      { requestUser },
-      info,
-    ) => {
-      const article = await DBconnection(TABLE_ARTICLE)
-        .select('*')
-        .where({ article_id })
-        .first();
-      if (!article) {
-        return getArticleResult;
+    getArticle: async (parent, { articleId }, { requestUser }, info) => {
+      const result: ISchemaResult = {
+        success: false,
+        message: '',
+      };
+      try {
+        const article = await ArticleService.getArticleById(
+          articleId,
+          requestUser,
+        );
+        result.success = true;
+        result.result = article;
+      } catch (error) {
+        result.message = error.message ? error.message : message.INTERNAL_ERROR;
       }
-      if (article.only_me && article.created_user_id !== requestUser.user_id) {
-        getArticleResult.message = message.NO_PERMISSION;
-        return getArticleResult;
-      }
-      if (article.group_id) {
-        const user = await DBconnection(TABLE_USER_IN_GROUP)
-          .select('*')
-          .where({ group_id: article.group_id, user_id: requestUser.user_id })
-          .first();
-        if (!user) {
-          getArticleResult.message = message.NO_PERMISSION;
-          return getArticleResult;
-        }
-      }
-      getArticleResult.result = article;
-      getArticleResult.success = true;
-      getArticleResult.message = message.SUCCESS;
-      return getArticleResult;
+      return result;
     },
   },
   Mutation: {
     createArticle: async (parent, { articleInfo }, { requestUser }, info) => {
-      let { article_nme, group_id, only_me } = articleInfo;
-      article_nme = article_nme.replace(specialRegex, '');
-      if (article_nme.length === 0) {
-        createArticleResult.message = message.INVALID_INPUT;
-        return createArticleResult;
+      const result: ISchemaResult = {
+        success: false,
+        message: '',
+      };
+      try {
+        const createdArticle = await ArticleService.createArticle(
+          articleInfo,
+          requestUser,
+        );
+        result.success = true;
+        result.result = createdArticle;
+        result.message = message.CREATE_SUCCESS;
+      } catch (error) {
+        result.message = error.message ? error.message : message.INTERNAL_ERROR;
       }
-      if (group_id && validator.isUUID(group_id, '4')) {
-        const findGroup = await DBconnection(TABLE_GROUP)
-          .select('*')
-          .where({ group_id })
-          .first();
-        if (!findGroup) {
-          createArticleResult.message = message.NOT_FOUND_GROUP;
-          return createArticleResult;
-        }
-      } else {
-        group_id = null;
-      }
-      only_me = !!only_me;
-
-      const createResult = await DBconnection(TABLE_ARTICLE)
-        .insert({
-          article_nme,
-          group_id,
-          created_user_id: requestUser.user_id,
-          only_me,
-        })
-        .returning('*');
-
-      if (createResult) {
-        createArticleResult.success = true;
-        createArticleResult.result = createResult[0];
-        createArticleResult.message = message.CREATE_SUCCESS;
-      } else {
-        createArticleResult.message = message.CREATE_FAIL;
-      }
-      return createArticleResult;
+      return result;
     },
     updateArticle: async (parent, { articleInfo }, { requestUser }, info) => {
-      let { article_nme, article_id } = articleInfo;
-      article_nme = article_nme.replace(specialRegex, '');
-      if (
-        article_nme.length === 0 ||
-        !article_id ||
-        !validator.isUUID(article_id, '4')
-      ) {
-        updateArticleResult.message = message.INVALID_INPUT;
-        return updateArticleResult;
+      const result: ISchemaResult = {
+        success: false,
+        message: '',
+      };
+      try {
+        const updatedArticle = await ArticleService.updateArticle(
+          articleInfo,
+          requestUser,
+        );
+        result.success = true;
+        result.result = updatedArticle;
+        result.message = message.UPDATE_SUCCESS;
+      } catch (error) {
+        result.message = error.message ? error.message : message.INTERNAL_ERROR;
       }
-      const findArticle = await DBconnection(TABLE_ARTICLE)
-        .select('*')
-        .where({ article_id })
-        .first();
-      if (!findArticle) {
-        updateArticleResult.message = message.NOT_FOUND_ARTICLE;
-        return updateArticleResult;
-      }
-      const updateResult = await DBconnection(TABLE_ARTICLE)
-        .where({ article_id })
-        .update({ article_nme })
-        .returning('*');
-
-      if (updateResult) {
-        updateArticleResult.success = true;
-        updateArticleResult.result = updateResult[0];
-        updateArticleResult.message = message.UPDATE_SUCCESS;
-      } else {
-        updateArticleResult.message = message.UPDATE_FAIL;
-      }
-      return updateArticleResult;
+      return result;
     },
-    deleteArticle: async (
-      parent,
-      { articleId: article_id },
-      { requestUser },
-      info,
-    ) => {
-      const article = await DBconnection(TABLE_ARTICLE)
-        .select('*')
-        .where({ article_id })
-        .first();
-      if (!article) {
-        deleteArticleResult.message = message.NOT_FOUND_CHAPTER;
-        return deleteArticleResult;
+    deleteArticle: async (parent, { articleId }, { requestUser }, info) => {
+      const result: ISchemaResult = {
+        success: false,
+        message: '',
+      };
+      try {
+        const deletedArticle = await ArticleService.deleteArticle(
+          articleId,
+          requestUser,
+        );
+        result.success = true;
+        result.result = deletedArticle;
+        result.message = message.DELETE_SUCCESS;
+      } catch (error) {
+        result.message = error.message ? error.message : message.INTERNAL_ERROR;
       }
-      const deleteChapter = await DBconnection(TABLE_ARTICLE)
-        .delete()
-        .where({ article_id })
-        .first();
-      if (!deleteChapter) {
-        deleteArticleResult.message = message.DELETE_FAIL;
-        return deleteArticleResult;
-      }
-      deleteArticleResult.result = article;
-      deleteArticleResult.success = true;
-      deleteArticleResult.message = message.SUCCESS;
-      return deleteArticleResult;
+      return result;
     },
   },
 };

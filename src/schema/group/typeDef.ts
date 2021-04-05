@@ -93,7 +93,7 @@ input searchGroupsByNameInput{
 
 extend type Query{
     myGroups:[Group!]
-    searchGroupsByNameInput(searchInfo:searchGroupsByNameInput):searchGroupsByNameResult
+    searchGroupByName(searchInfo:searchGroupsByNameInput):searchGroupsByNameResult
 } 
 
 extend type Mutation{

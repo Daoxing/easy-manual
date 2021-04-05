@@ -2,11 +2,11 @@ export default `
 type Article{
     article_id: ID
     article_nme: String
+    article_content: String
     created_user: User
     created_tms: Date
     updated_tms: Date
     group:Group
-    first_chapters: [Chapter]
 }
 
 type getArticleResult{
@@ -35,6 +35,7 @@ type deleteArticleResult{
 
 input createArticleInput{
     article_nme: String
+    article_content: String
     group_id: ID
     only_me: Boolean
 }

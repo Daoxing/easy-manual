@@ -3,15 +3,22 @@ import { gql } from 'apollo-server';
 import group from './group';
 import user from './user';
 import article from './article';
-import chapter from './chapter';
 
 let types = `
 scalar Date
 `;
-let queries = {};
-let mutations = {};
+let queries = {
+  root: () => {
+    return 'root query success!';
+  },
+};
+let mutations = {
+  root: () => {
+    return 'root mutation success!';
+  },
+};
 let otherResolvers = {};
-[group, user, article, chapter].forEach((e) => {
+[group, user, article].forEach((e) => {
   const { typeDef, resolver } = e;
   types = types.concat(typeDef);
   const { Query = {}, Mutation = {}, ...others } = resolver as any;
@@ -21,6 +28,13 @@ let otherResolvers = {};
 });
 
 const typeDefs = gql`
+  type Query {
+    root: String!
+  }
+
+  type Mutation {
+    root: String!
+  }
   ${types}
 `;
 const resolvers = {
