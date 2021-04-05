@@ -57,12 +57,12 @@ input searchUsersByNameInput{
     group_id:ID
 }
 
-type Query{
+extend type Query{
     me: User
     searchUsersByName(searchInfo:searchUsersByNameInput):searchUsersByNameResult
 }
 
-type Mutation{
+extend type Mutation{
     login(account:String!): loginResult
     verifyCode(code:String!): verifyCodeResult
     updateUser(userInfo:UpdateUserInput!): UpdateUserResult
