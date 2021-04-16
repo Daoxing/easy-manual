@@ -4,3 +4,4 @@ import * as message from './message';
 export default { message, ...user };
 export * from './table_name';
 export * from './message';
+export * from './common';

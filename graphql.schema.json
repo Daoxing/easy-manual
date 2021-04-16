@@ -1223,7 +1223,7 @@
             "deprecationReason": null
           },
           {
-            "name": "phone_nbr_verify_code",
+            "name": "verify_code",
             "description": null,
             "args": [],
             "type": {
@@ -1235,7 +1235,7 @@
             "deprecationReason": null
           },
           {
-            "name": "phone_nbr_verify_code_created_tms",
+            "name": "verify_code_created_tms",
             "description": null,
             "args": [],
             "type": {

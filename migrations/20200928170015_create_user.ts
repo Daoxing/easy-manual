@@ -12,9 +12,9 @@ export async function up(knex: Knex): Promise<void> {
     table.text('email_address').nullable().unique();
     table.text('phone_nbr').nullable().unique();
     table.text('icon_url').nullable();
-    table.string('phone_nbr_verify_code', 6).nullable().defaultTo(null);
+    table.string('verify_code', 6).nullable().defaultTo(null);
     table
-      .timestamp('phone_nbr_verify_code_created_tms')
+      .timestamp('verify_code_created_tms')
       .nullable()
       .defaultTo(null);
     table.timestamp('created_tms').notNullable().defaultTo(knex.fn.now());

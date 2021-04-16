@@ -1,5 +1,5 @@
 import { message } from '../../constants/message';
-import { TABLE_ARTICLE, TABLE_GROUP } from '../../constants/table_name';
+import { TABLE_GROUP } from '../../constants/table_name';
 import { DBconnection } from '../../database';
 import { ArticleService } from '../../services';
 import { ISchemaResult } from '../../types';

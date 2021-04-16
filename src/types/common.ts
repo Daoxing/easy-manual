@@ -1,7 +1,7 @@
-import { IArticle } from './article';
+import { IUser, IArticle } from '.';
 
 export interface ISchemaResult {
   success: boolean;
   message: string;
-  result?: IArticle;
+  result?: IArticle | IUser | string;
 }

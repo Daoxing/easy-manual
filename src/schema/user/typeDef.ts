@@ -5,8 +5,8 @@ type User{
     email_address:String,
     phone_nbr:String,
     icon_url:String,
-    phone_nbr_verify_code:String,
-    phone_nbr_verify_code_created_tms:Date,
+    verify_code:String,
+    verify_code_created_tms:Date,
     created_tms:Date,
     updated_tms:Date,
     last_login_tms:Date,
@@ -19,12 +19,6 @@ enum GENDERENUM{
     MALE
     FEMALE
     UNKNOWN
-}
-
-type loginResult{
-    success: Boolean!
-    result: String
-    message: String
 }
 
 type verifyCodeResult{
@@ -63,7 +57,6 @@ extend type Query{
 }
 
 extend type Mutation{
-    login(account:String!): loginResult
     verifyCode(code:String!): verifyCodeResult
     updateUser(userInfo:UpdateUserInput!): UpdateUserResult
 }
