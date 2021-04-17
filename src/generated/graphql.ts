@@ -200,8 +200,8 @@ export type User = {
   email_address?: Maybe<Scalars['String']>;
   phone_nbr?: Maybe<Scalars['String']>;
   icon_url?: Maybe<Scalars['String']>;
-  phone_nbr_verify_code?: Maybe<Scalars['String']>;
-  phone_nbr_verify_code_created_tms?: Maybe<Scalars['Date']>;
+  verify_code?: Maybe<Scalars['String']>;
+  verify_code_created_tms?: Maybe<Scalars['Date']>;
   created_tms?: Maybe<Scalars['Date']>;
   updated_tms?: Maybe<Scalars['Date']>;
   last_login_tms?: Maybe<Scalars['Date']>;
@@ -899,12 +899,12 @@ export type UserResolvers<
     ContextType
   >;
   icon_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  phone_nbr_verify_code?: Resolver<
+  verify_code?: Resolver<
     Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >;
-  phone_nbr_verify_code_created_tms?: Resolver<
+  verify_code_created_tms?: Resolver<
     Maybe<ResolversTypes['Date']>,
     ParentType,
     ContextType

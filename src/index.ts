@@ -1,19 +1,31 @@
-import * as express from 'express';
+import express = require('express');
+import { ApolloServer } from 'apollo-server-express';
+
 import envConfig from './config';
-import { ApolloServer } from 'apollo-server';
 import { typeDefs, resolvers } from './schema';
 import { requestUser } from './middleware/requestUser';
+import { router } from './router';
 
-const app = express();
+async function startApolloServer() {
+  const app = express();
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: {
+      requestUser,
+    },
+  });
+  server.setGraphQLPath(envConfig.GRAPHQL_URL);
+  server.applyMiddleware({ app });
+  app.use(router);
+  return { server, app };
+}
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: {
-    requestUser,
-  },
-});
-
-server.listen(envConfig.SERVER_PORT).then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
-});
+(async () => {
+  const { app, server } = await startApolloServer();
+  app.listen({ port: envConfig.SERVER_PORT }, () => {
+    console.log(
+      `🚀 Server ready at http://localhost:${envConfig.SERVER_PORT}${server.graphqlPath}`,
+    );
+  });
+})();
