@@ -13,10 +13,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text('phone_nbr').nullable().unique();
     table.text('icon_url').nullable();
     table.string('verify_code', 6).nullable().defaultTo(null);
-    table
-      .timestamp('verify_code_created_tms')
-      .nullable()
-      .defaultTo(null);
+    table.timestamp('verify_code_created_tms').nullable().defaultTo(null);
     table.timestamp('created_tms').notNullable().defaultTo(knex.fn.now());
     table.timestamp('updated_tms').notNullable().defaultTo(knex.fn.now());
     table.timestamp('last_login_tms').notNullable().defaultTo(knex.fn.now());

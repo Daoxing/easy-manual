@@ -1,7 +1,6 @@
 import envConfig from '../config';
-import * as knex from 'knex';
 
-export const DBconnection = knex({
+export const DBconnection = require('knex')({
   client: 'pg',
   connection: {
     host: envConfig.PG_HOST,

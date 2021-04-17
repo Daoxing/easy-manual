@@ -3,7 +3,7 @@ import { message } from '../../constants/message';
 import { TABLE_USER, TABLE_USER_IN_GROUP } from '../../constants/table_name';
 import { DBconnection } from '../../database';
 
-import _ = require('lodash');
+import * as _ from 'lodash';
 import { UserService } from '../../services/user.service';
 import { ISchemaResult } from '../../types';
 

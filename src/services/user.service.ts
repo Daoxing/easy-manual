@@ -7,7 +7,7 @@ import {
 } from '../types';
 import { UserModel } from '../models';
 import { message, specialRegex } from '../constants';
-import _ = require('lodash');
+import * as _ from 'lodash';
 import validator from 'validator';
 import { generateRandomDigitalNumbers } from '../utils';
 import envConfig from '../config';

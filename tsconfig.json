@@ -1,34 +1,19 @@
-// {
-//     "compileOnSave": false,
-//   "compilerOptions": {
-//     "baseUrl": "./",
-//     "outDir": "./dist/out-tsc",
-//     "sourceMap": true,
-//     "declaration": false,
-//     "downlevelIteration": true,
-//     "experimentalDecorators": true,
-//     "moduleResolution": "node",
-//     "importHelpers": true,
-//     "target": "es2015",
-//     "module": "es2020",
-//     "lib": [
-//       "es2018",
-//       "dom"
-//     ]
-//   },
-//   "include": [
-//     "src/**/*.ts"
-// ],
-// "exclude": [
-//     "node_modules",
-//     "**/*.spec.ts"
-// ]
-// }
 {
     "compilerOptions": {
         "outDir": "./dist",
         "allowJs": true,
-        "target": "es5"
+        "target": "es5",
+        "moduleResolution": "node",
+        // "strict": true,
+        // "noUnusedLocals": true,
+        "removeComments": true,
+        "esModuleInterop": true,
+        // "noImplicitReturns": true,
+        // "forceConsistentCasingInFileNames": true,
+        "sourceMap": true,
+        // "emitDecoratorMetadata": true,
+        "lib": ["es5","dom","es6"],
+        "module": "commonjs",
     },
     "include": [
         "./src/**/*",

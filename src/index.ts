@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express = require('express');
 import { ApolloServer } from 'apollo-server-express';
 
 import envConfig from './config';
