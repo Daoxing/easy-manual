@@ -15,18 +15,21 @@ export default async function loginController(
   next: any,
 ) {
   try {
-    const { account = '' } = req.body as any;
+    const { account = '' } = req.body;
     const result = await UserService.login(account);
     defaultLoginResult.success = true;
-    defaultLoginResult.result = `${jwt.sign(result, 'serectkey')}`;
+    defaultLoginResult.result = `${jwt.sign(
+      JSON.stringify(result),
+      'serectkey',
+    )}`;
     defaultLoginResult.message = message.LOGIN_SUCCESS;
   } catch (error) {
-    console.error(error.message);
+    console.error(error);
+    defaultLoginResult.success = false;
     defaultLoginResult.message = error.message
       ? error.message
       : message.INTERNAL_ERROR;
   }
-
   res.setHeader('Content-Type', 'application/json');
-  res.end(defaultLoginResult);
+  res.end(JSON.stringify(defaultLoginResult));
 }
