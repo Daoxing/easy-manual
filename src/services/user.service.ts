@@ -37,7 +37,6 @@ const verifyCode = async (code: string, requestingUser: IRequestingUser) => {
   if (!selectResult) {
     throw new Error(message.WRONG_CODE);
   }
-
   const updateResult = await UserModel.clearVerifyCode(
     requestingUser.user_id,
     code,
@@ -52,11 +51,14 @@ const login = async (account: string) => {
   if (account.length === 0) {
     throw new Error(message.NOT_FOUND_ACCOUNT);
   }
+  account = account.toLowerCase();
   let accountInfo: LoginByEmail | LoginByPhoneNbr;
   if (validator.isEmail(account)) {
     accountInfo = { email_address: account };
   } else if (validator.isMobilePhone(account, envConfig.ALLOW_PHONE_LOCALE)) {
     accountInfo = { phone_nbr: account };
+  } else {
+    throw new Error(message.WRONG_ACCOUNT);
   }
   if (Object.keys(accountInfo).length === 0) {
     throw new Error(message.WRONG_ACCOUNT);
@@ -72,9 +74,11 @@ const login = async (account: string) => {
       accountInfo,
       phoneNbrCodeUpdate,
     ) as NewUser;
-    inserOrUpdate = await UserModel.insertUser(newUserInfo);
+    inserOrUpdate = (await UserModel.insertUser(newUserInfo))[0];
   } else {
-    inserOrUpdate = await UserModel.updateVerifyCodeForLoginUser(accountInfo);
+    inserOrUpdate = (
+      await UserModel.updateVerifyCodeForLoginUser(accountInfo)
+    )[0];
   }
   if (!inserOrUpdate) {
     throw new Error(message.UPDATE_FAIL);

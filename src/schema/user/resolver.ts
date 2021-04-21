@@ -7,12 +7,6 @@ import * as _ from 'lodash';
 import { UserService } from '../../services/user.service';
 import { ISchemaResult } from '../../types';
 
-const verifyCodeResult = {
-  success: false,
-  result: {},
-  message: message.INTERNAL_ERROR,
-};
-
 const UpdateUserResult = {
   success: false,
   result: {},
@@ -57,7 +51,8 @@ export default {
         result.result = user;
         result.message = message.SUCCESS;
       } catch (error) {
-        result.result = await UserService.me(requestUser.user_id);
+        console.error(error);
+        result.result = await UserService.me(requestUser);
         result.message = error.message ? error.message : message.INTERNAL_ERROR;
       }
       return result;

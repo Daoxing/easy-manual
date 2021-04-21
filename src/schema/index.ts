@@ -42,4 +42,9 @@ const resolvers = {
   Mutation: mutations,
   ...otherResolvers,
 };
-export { typeDefs, resolvers };
+const context = ({ req }: any) => {
+  return {
+    requestUser: req.user,
+  };
+};
+export { typeDefs, resolvers, context };

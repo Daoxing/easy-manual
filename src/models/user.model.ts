@@ -66,7 +66,7 @@ const clearVerifyCode = (userId: string, code: string) => {
 };
 
 const findLoginUser = (accountInfo: LoginByEmail | LoginByPhoneNbr) => {
-  return DBconnection(TABLE_USER).where(accountInfo).select('*');
+  return DBconnection(TABLE_USER).where(accountInfo).select('*').first();
 };
 
 const findOtherUsersByAccount = (
@@ -88,7 +88,7 @@ const updateUserInfo = (userInfo: UpdateUserInfo, requestUserId: string) => {
 };
 
 const insertUser = (accountInfo: NewUser) => {
-  return DBconnection(TABLE_USER).where(accountInfo).select('*');
+  return DBconnection(TABLE_USER).insert(accountInfo).returning('*');
 };
 
 const updateVerifyCodeForLoginUser = (
