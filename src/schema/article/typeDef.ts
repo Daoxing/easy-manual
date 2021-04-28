@@ -3,6 +3,7 @@ type Article{
     article_id: ID
     article_nme: String
     article_content: String
+    only_me:Boolean
     created_user: User
     created_tms: Date
     updated_tms: Date
@@ -41,7 +42,10 @@ input createArticleInput{
 }
 
 input updateArticleInput{
-    article_nme: String!
+    article_nme: String
+    article_content: String
+    group_id:ID
+    only_me:Boolean
     article_id: ID!
 }
 

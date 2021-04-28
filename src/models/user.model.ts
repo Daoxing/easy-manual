@@ -16,7 +16,10 @@ const getUserInGroup = (userId: string, groupId: string) => {
       `${TABLE_USER_IN_GROUP}.user_id`,
       `${TABLE_USER}.user_id`,
     )
-    .where({ group_id: groupId, user_id: userId })
+    .whereRaw(
+      `${TABLE_USER_IN_GROUP}.group_id = ? AND ${TABLE_USER_IN_GROUP}.user_id = ?`,
+      [groupId, userId],
+    )
     .first();
 };
 

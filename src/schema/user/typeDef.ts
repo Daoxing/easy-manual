@@ -13,6 +13,7 @@ type User{
     accept_terms:Boolean,
     deleted:Boolean,
     gender:GENDERENUM,
+    my_groups:[Group]
 }
 
 enum GENDERENUM{
