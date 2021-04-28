@@ -31,6 +31,7 @@ const getArticleById = async (
       throw new Error(message.NO_PERMISSION);
     }
   }
+  return article;
 };
 
 // Create
@@ -71,13 +72,12 @@ const updateArticle = async (
   articleInfo: IUpdateArticleInput,
   requestingUser: IRequestingUser,
 ) => {
-  let { article_nme, article_id, article_contennt } = articleInfo;
-  article_nme = article_nme.replace(specialRegex, '');
-  if (
-    article_nme.length === 0 ||
-    !article_id ||
-    !validator.isUUID(article_id, '4')
-  ) {
+  let { article_nme, article_id } = articleInfo;
+
+  if (article_nme) {
+    articleInfo.article_nme = article_nme.replace(specialRegex, '');
+  }
+  if (!article_id || !validator.isUUID(article_id, '4')) {
     throw new Error(message.INVALID_INPUT);
   }
 
@@ -90,11 +90,7 @@ const updateArticle = async (
     throw new Error(message.NO_PERMISSION);
   }
 
-  const updateResult = await ArticleModel.updateArticle({
-    article_nme,
-    article_id,
-    article_contennt,
-  });
+  const updateResult = await ArticleModel.updateArticle(articleInfo);
 
   if (!updateResult) {
     throw new Error(message.UPDATE_FAIL);

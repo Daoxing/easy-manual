@@ -145,7 +145,7 @@ export default {
           const { created_user_id, group_id } = insertGroupResult[0];
 
           const insertUserInGroupResult = await trx(TABLE_USER_IN_GROUP)
-            .insert({ group_id, user_id: created_user_id })
+            .insert({ group_id, user_id: created_user_id, approved: true })
             .returning('*');
 
           if (

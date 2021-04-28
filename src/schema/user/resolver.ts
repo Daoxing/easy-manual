@@ -1,11 +1,11 @@
 import validator from 'validator';
 import { message } from '../../constants/message';
-import { TABLE_USER, TABLE_USER_IN_GROUP } from '../../constants/table_name';
+import { TABLE_USER } from '../../constants/table_name';
 import { DBconnection } from '../../database';
 
 import * as _ from 'lodash';
-import { UserService } from '../../services/user.service';
 import { ISchemaResult } from '../../types';
+import { GroupService, UserService } from '../../services';
 
 const UpdateUserResult = {
   success: false,
@@ -14,13 +14,18 @@ const UpdateUserResult = {
 };
 
 export default {
+  User: {
+    my_groups: async (parent, args, { requestUser }, info) => {
+      return GroupService.getGroupsForUser(requestUser);
+    },
+  },
   GENDERENUM: {
     MALE: 'male',
     FEMALE: 'female',
     UNKNOWN: 'unknown',
   },
   Query: {
-    me: async (parent, args, { requestUser }, info) => {
+    me: (parent, args, { requestUser }, info) => {
       return UserService.me(requestUser);
     },
     searchUsersByName: async (parent, { searchInfo }, context, info) => {
@@ -51,7 +56,6 @@ export default {
         result.result = user;
         result.message = message.SUCCESS;
       } catch (error) {
-        console.error(error);
         result.result = await UserService.me(requestUser);
         result.message = error.message ? error.message : message.INTERNAL_ERROR;
       }
