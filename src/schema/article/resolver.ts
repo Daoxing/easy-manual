@@ -1,7 +1,7 @@
 import { message } from '../../constants/message';
 import { TABLE_GROUP } from '../../constants/table_name';
 import { DBconnection } from '../../database';
-import { ArticleService } from '../../services';
+import { ArticleService, UserService } from '../../services';
 import { ISchemaResult } from '../../types';
 
 const deleteArticleResult = {
@@ -13,12 +13,15 @@ const deleteArticleResult = {
 export default {
   Article: {
     created_user: (parent, args, { requestUser }, info) => {
-      return requestUser;
+      return UserService.me(requestUser);
     },
     group: ({ group_id }, args, { requestUser }, info) => {
       return group_id
         ? DBconnection(TABLE_GROUP).select('*').where({ group_id }).first()
         : null;
+    },
+    editable: ({ created_user_id }, args, { requestUser }, info) => {
+      return  created_user_id===requestUser.user_id;
     },
   },
   Query: {
