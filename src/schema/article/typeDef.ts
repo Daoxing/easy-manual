@@ -8,6 +8,7 @@ type Article{
     created_tms: Date
     updated_tms: Date
     group:Group
+    editable: Boolean
 }
 
 type getArticleResult{
