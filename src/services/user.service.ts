@@ -15,6 +15,9 @@ import envConfig from '../config';
 const me = async (requestingUser: IRequestingUser) => {
   return UserModel.findUserById(requestingUser.user_id);
 };
+const findUserById = async (id: string) => {
+  return UserModel.findUserById(id);
+};
 
 // Search
 const searchUsersByName = async (searchInfo: SearchUsersByNameInput) => {
@@ -89,9 +92,6 @@ const login = async (account: string) => {
 //Update
 const updateUser = async (userInfo: any, requestUser: IRequestingUser) => {
   const { email_address, phone_nbr, user_nme } = userInfo;
-  if (_.isEmpty(email_address) && _.isEmpty(phone_nbr)) {
-    throw new Error(message.INVALID_INPUT);
-  }
   // TODO: user_name should replace all special characters.
   // TODO: check email and phone number is working.
   if (!_.isUndefined(user_nme) && _.isEmpty(user_nme)) {
@@ -131,6 +131,7 @@ const updateUser = async (userInfo: any, requestUser: IRequestingUser) => {
 
 export const UserService: any = {
   me,
+  findUserById,
   searchUsersByName,
   verifyCode,
   login,

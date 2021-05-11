@@ -1,10 +1,14 @@
 import { GroupModel } from '../models/group.model';
-import { IUser } from '../types';
+import { IOrder, IPage, IUser } from '../types';
 
-const getGroupsForUser = (requestingUser: IUser) => {
-  return GroupModel.getGroupsForUser(requestingUser.user_id);
+const getGroupsForUser = (userId: string, sort: IOrder, page: IPage) => {
+  return GroupModel.getGroupsForUser(userId, sort, page);
 };
-
+const getGroupsForUserCount = (userId: string) => {
+  return GroupModel.getGroupsCountForUser(userId);
+};
 export const GroupService: any = {
   getGroupsForUser,
+
+  getGroupsForUserCount,
 };

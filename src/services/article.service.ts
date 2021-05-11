@@ -6,6 +6,8 @@ import { GroupModel } from '../models/group.model';
 import {
   IArticle,
   ICreateArticleInput,
+  IOrder,
+  IPage,
   IRequestingUser,
   IUpdateArticleInput,
 } from '../types';
@@ -34,6 +36,37 @@ const getArticleById = async (
   return article;
 };
 
+const getUsersAllArticles = (userId: string, sort: IOrder, page: IPage) => {
+  return ArticleModel.getUsersAllArticles(userId, sort, page);
+};
+const getUsersAllArticlesCount = (userId: string) => {
+  return ArticleModel.getUsersAllArticlesCount(userId);
+};
+
+const getUsersAllPublicArticles = (
+  userId: string,
+  sort: IOrder,
+  page: IPage,
+) => {
+  return ArticleModel.getUsersAllPublicArticles(userId, sort, page);
+};
+const getUsersAllPublicArticlesCount = (userId: string) => {
+  return ArticleModel.getUsersAllPublicArticlesCount(userId);
+};
+
+const getUsersAccessibleArticles = (
+  userId: string,
+  sort: IOrder,
+  page: IPage,
+) => {
+  return ArticleModel.getUsersAccessibleArticles(userId, sort, page);
+};
+const getUsersAccessibleArticlesCount = (userId: string) => {
+  return ArticleModel.getUsersAccessibleArticlesCount(userId);
+};
+const getArticleCountInGroup = (groupId: string) => {
+  return ArticleModel.getArticleCountInGroup(groupId);
+};
 // Create
 const createArticle = async (
   articleInfo: ICreateArticleInput,
@@ -119,6 +152,13 @@ const deleteArticle = async (
 
 export const ArticleService: any = {
   getArticleById,
+  getUsersAllArticles,
+  getUsersAllArticlesCount,
+  getUsersAllPublicArticles,
+  getUsersAllPublicArticlesCount,
+  getUsersAccessibleArticles,
+  getUsersAccessibleArticlesCount,
+  getArticleCountInGroup,
   createArticle,
   updateArticle,
   deleteArticle,
