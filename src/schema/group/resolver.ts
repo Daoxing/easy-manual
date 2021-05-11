@@ -1,5 +1,5 @@
 import validator from 'validator';
-import { specialRegex } from '../../constants/common';
+import { defaultPage, specialRegex } from '../../constants/common';
 import { message } from '../../constants/message';
 import {
   TABLE_ARTICLE,
@@ -8,6 +8,7 @@ import {
   TABLE_USER_IN_GROUP,
 } from '../../constants/table_name';
 import { DBconnection } from '../../database';
+import { ArticleService, GroupService, UserService } from '../../services';
 import { graphqlResult } from '../types';
 
 const createGroupResult = {
@@ -53,18 +54,21 @@ const searchGroupsByNameResult = {
 
 export default {
   Group: {
-    created_user: (parent, args, { requestUser }, info) => {
-      return requestUser;
+    created_user: ({ created_user_id }, args, context, info) => {
+      return UserService.findUserById(created_user_id);
+    },
+    article_count: ({ group_id }, args, context, info) => {
+      return ArticleService.getArticleCountInGroup(group_id);
     },
   },
   GroupMembers: {
-    count: (parent, { group_id }, { requestUser }, info) => {
+    count: (parent, { group_id }, context, info) => {
       return DBconnection(TABLE_USER_IN_GROUP)
         .select('COUNT(1)')
         .where({ group_id, approved: true })
         .orderBy('joined_tms', 'asc');
     },
-    members: (parent, { group_id }, { requestUser }, info) => {
+    members: (parent, { group_id }, context, info) => {
       return DBconnection.select('group.*')
         .from(TABLE_USER_IN_GROUP)
         .leftJoin(
@@ -96,15 +100,25 @@ export default {
     },
   },
   Query: {
-    myGroups: async (parent, args, { requestUser }, info) => {
-      return DBconnection.select('group.*')
-        .from(TABLE_GROUP)
-        .leftJoin(
-          TABLE_USER_IN_GROUP,
-          `${TABLE_GROUP}.group_id`,
-          `${TABLE_USER_IN_GROUP}.group_id`,
-        )
-        .where({ user_id: requestUser.user_id, approved: true });
+    joinedGroups: async (parent, { page, sort }, { requestUser }, info) => {
+      page = page ? page : defaultPage;
+      try {
+        const groups = await GroupService.getGroupsForUser(
+          requestUser.user_id,
+          sort,
+          page,
+        );
+        return {
+          totalCount: GroupService.getGroupsForUserCount(requestUser.user_id),
+          groups,
+          page,
+        };
+      } catch (error) {}
+      return {
+        totalCount: 0,
+        groups: [],
+        page,
+      };
     },
     searchGroupByName: async (parent, { searchInfo }, context, info) => {
       const { name = '' } = searchInfo;

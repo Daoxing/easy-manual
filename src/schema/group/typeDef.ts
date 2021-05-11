@@ -6,6 +6,9 @@ type Group{
     created_user: User
     all_joined_members: GroupMembers
     join_group_request: joinGroupRequest 
+    article_count:Int
+    created_tms: Date
+    updated_tms: Date
 }
 
 type GroupMembers{
@@ -59,7 +62,11 @@ type searchGroupsByNameResult{
     result: [Group!]
     message: String
 }
-
+type joinedGroupsResult{
+    totalCount:Int!
+    groups:[Group]
+    page:pageInfo
+}
 
 input createGroupInput{
     group_nme:String!
@@ -92,7 +99,7 @@ input searchGroupsByNameInput{
 }
 
 extend type Query{
-    myGroups:[Group!]
+    joinedGroups(sort:Order,page:Pagination):joinedGroupsResult
     searchGroupByName(searchInfo:searchGroupsByNameInput):searchGroupsByNameResult
 } 
 

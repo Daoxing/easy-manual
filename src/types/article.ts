@@ -18,3 +18,13 @@ export interface IUpdateArticleInput {
   article_nme?: string;
   article_id: string;
 }
+
+export interface IOrder {
+  field: string;
+  order: 'ASC' | 'DESC';
+}
+
+export interface IPage {
+  pageNo: number;
+  pageCount: number;
+}

@@ -1,14 +1,9 @@
+import { defaultPage } from '../../constants';
 import { message } from '../../constants/message';
 import { TABLE_GROUP } from '../../constants/table_name';
 import { DBconnection } from '../../database';
 import { ArticleService, UserService } from '../../services';
 import { ISchemaResult } from '../../types';
-
-const deleteArticleResult = {
-  success: false,
-  result: {},
-  message: message.INTERNAL_ERROR,
-};
 
 export default {
   Article: {
@@ -21,10 +16,89 @@ export default {
         : null;
     },
     editable: ({ created_user_id }, args, { requestUser }, info) => {
-      return  created_user_id===requestUser.user_id;
+      return created_user_id === requestUser.user_id;
     },
   },
   Query: {
+    getUsersAllArticles: async (
+      parent,
+      { page, sort },
+      { requestUser },
+      info,
+    ) => {
+      page = page ? page : defaultPage;
+      try {
+        return {
+          totalCount: ArticleService.getUsersAllArticlesCount(
+            requestUser.user_id,
+          ),
+          articles: ArticleService.getUsersAllArticles(
+            requestUser.user_id,
+            sort,
+            page,
+          ),
+          page,
+        };
+      } catch (error) {}
+      return {
+        totalCount: 0,
+        articles: [],
+        page,
+      };
+    },
+    getUsersAllPublicArticles: async (
+      parent,
+      { page, sort },
+      { requestUser },
+      info,
+    ) => {
+      page = page ? page : defaultPage;
+      try {
+        return {
+          totalCount: ArticleService.getUsersAllPublicArticlesCount(
+            requestUser.user_id,
+          ),
+          articles: ArticleService.getUsersAllPublicArticles(
+            requestUser.user_id,
+            sort,
+            page,
+          ),
+          page,
+        };
+      } catch (error) {}
+      return {
+        totalCount: 0,
+        articles: [],
+        page,
+      };
+    },
+    getUsersAccessibleArticles: async (
+      parent,
+      { page, sort },
+      { requestUser },
+      info,
+    ) => {
+      page = page ? page : defaultPage;
+      try {
+        const articles = await ArticleService.getUsersAccessibleArticles(
+          requestUser.user_id,
+          sort,
+          page,
+        );
+        return {
+          totalCount: ArticleService.getUsersAccessibleArticlesCount(
+            requestUser.user_id,
+          ),
+          articles: articles,
+          page,
+        };
+      } catch (error) {}
+      return {
+        totalCount: 0,
+        articles: [],
+        page,
+      };
+    },
     getArticle: async (parent, { articleId }, { requestUser }, info) => {
       const result: ISchemaResult = {
         success: false,

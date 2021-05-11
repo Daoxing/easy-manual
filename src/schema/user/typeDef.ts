@@ -13,7 +13,10 @@ type User{
     accept_terms:Boolean,
     deleted:Boolean,
     gender:GENDERENUM,
-    my_groups:[Group]
+    my_groups:[Group],
+    my_articles:[Article],
+    my_accessible_articles:[Article],
+    my_public_articles:[Article],
 }
 
 enum GENDERENUM{
@@ -40,11 +43,18 @@ type searchUsersByNameResult{
     message: String
 }
 
+type findUserResult{
+    success: Boolean!
+    result: User
+    message: String
+}
+
 input UpdateUserInput{
     user_nme:String,
     email_address:String,
     phone_nbr:String,
     gender:GENDERENUM,
+    icon_url:String,
 }
 
 input searchUsersByNameInput{
@@ -54,6 +64,7 @@ input searchUsersByNameInput{
 
 extend type Query{
     me: User
+    findUserById(id:ID!):findUserResult
     searchUsersByName(searchInfo:searchUsersByNameInput):searchUsersByNameResult
 }
 

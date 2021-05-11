@@ -17,6 +17,24 @@ type getArticleResult{
     message: String
 }
 
+type getUsersAllArticlesResult{
+    totalCount:Int!
+    articles:[Article]
+    page:pageInfo
+}
+
+type getUsersAllPublicArticlesResult{
+    totalCount:Int!
+    articles:[Article]
+    page:pageInfo
+}
+
+type getUsersAccessibleArticlesResult{
+    totalCount:Int!
+    articles:[Article]
+    page:pageInfo
+}
+
 type createArticleResult{
     success: Boolean
     result: Article
@@ -33,6 +51,22 @@ type deleteArticleResult{
     success: Boolean
     result: Article
     message: String
+}
+type pageInfo{
+    pageNo:Int!
+    pageCount:Int!
+}
+input Order{
+    field:String!
+    order:OrderEnum!
+}
+enum OrderEnum{
+    ASC
+    DESC
+}
+input Pagination{
+    pageNo:Int!
+    pageCount:Int!
 }
 
 input createArticleInput{
@@ -52,6 +86,9 @@ input updateArticleInput{
 
 extend type Query{
     getArticle(articleId:String!):getArticleResult
+    getUsersAllArticles(sort:Order,page:Pagination):getUsersAllArticlesResult
+    getUsersAllPublicArticles(sort:Order,page:Pagination):getUsersAllPublicArticlesResult
+    getUsersAccessibleArticles(sort:Order,page:Pagination):getUsersAccessibleArticlesResult
 }
 
 extend type Mutation{
