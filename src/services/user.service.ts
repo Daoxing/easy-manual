@@ -1,4 +1,6 @@
 import {
+  IOrder,
+  IPage,
   IRequestingUser,
   LoginByEmail,
   LoginByPhoneNbr,
@@ -17,6 +19,13 @@ const me = async (requestingUser: IRequestingUser) => {
 };
 const findUserById = async (id: string) => {
   return UserModel.findUserById(id);
+};
+const findUsersInGroup = (groupId: string, sort: IOrder, page: IPage) => {
+  return UserModel.findUsersInGroup(groupId, sort, page);
+};
+
+const findUsersCountInGroup = (groupId: string) => {
+  return UserModel.findUsersCountInGroup(groupId);
 };
 
 // Search
@@ -136,4 +145,6 @@ export const UserService: any = {
   verifyCode,
   login,
   updateUser,
+  findUsersInGroup,
+  findUsersCountInGroup,
 };

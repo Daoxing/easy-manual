@@ -8,7 +8,9 @@ import {
   TABLE_USER_IN_GROUP,
 } from '../../constants/table_name';
 import { DBconnection } from '../../database';
+import { GroupModel } from '../../models/group.model';
 import { ArticleService, GroupService, UserService } from '../../services';
+import { IjoinGroupStatusEnum, ISchemaResult } from '../../types';
 import { graphqlResult } from '../types';
 
 const createGroupResult = {
@@ -53,12 +55,23 @@ const searchGroupsByNameResult = {
 };
 
 export default {
+  joinedGroupStatusEnum: {
+    NOT_JOINED: IjoinGroupStatusEnum.NOT_JOINED,
+    APPLIED: IjoinGroupStatusEnum.APPLIED,
+    JOINED: IjoinGroupStatusEnum.JOINED,
+  },
+
   Group: {
+    joined_group: async ({ group_id }, args, { requestUser }, info) => {
+      const res = await GroupModel.isJoinedGroup(group_id, requestUser.user_id);
+      return res
+        ? res.approved
+          ? IjoinGroupStatusEnum.JOINED
+          : IjoinGroupStatusEnum.APPLIED
+        : IjoinGroupStatusEnum.NOT_JOINED;
+    },
     created_user: ({ created_user_id }, args, context, info) => {
       return UserService.findUserById(created_user_id);
-    },
-    article_count: ({ group_id }, args, context, info) => {
-      return ArticleService.getArticleCountInGroup(group_id);
     },
   },
   GroupMembers: {
@@ -100,6 +113,20 @@ export default {
     },
   },
   Query: {
+    groupInfo: async (parent, { group_id }, context, info) => {
+      const result: ISchemaResult = {
+        success: false,
+        message: '',
+      };
+      try {
+        const group = await GroupModel.getGroupById(group_id);
+        result.result = group;
+        result.success = !!group;
+      } catch (error) {
+        result.message = error.message ? error.message : message.INTERNAL_ERROR;
+      }
+      return result;
+    },
     joinedGroups: async (parent, { page, sort }, { requestUser }, info) => {
       page = page ? page : defaultPage;
       try {

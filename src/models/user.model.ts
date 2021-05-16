@@ -1,6 +1,13 @@
-import { TABLE_USER, TABLE_USER_IN_GROUP } from '../constants';
+import {
+  defaultPage,
+  defaultSort,
+  TABLE_USER,
+  TABLE_USER_IN_GROUP,
+} from '../constants';
 import { DBconnection } from '../database';
 import {
+  IOrder,
+  IPage,
   LoginByEmail,
   LoginByPhoneNbr,
   NewUser,
@@ -41,6 +48,36 @@ const findUserById = async (userId: string) => {
     .where({ user_id: userId })
     .select('*')
     .first();
+};
+const findUsersInGroup = async (
+  groupId: string,
+  order: IOrder = defaultSort,
+  page: IPage = defaultPage,
+) => {
+  order = order ? order : defaultSort;
+  page = page ? page : defaultPage;
+  return DBconnection.select(`${TABLE_USER}.*`)
+    .from(TABLE_USER)
+    .leftJoin(
+      TABLE_USER_IN_GROUP,
+      `${TABLE_USER_IN_GROUP}.user_id`,
+      `${TABLE_USER}.user_id`,
+    )
+    .where(DBconnection.raw(`${TABLE_USER_IN_GROUP}.group_id = '${groupId}'`))
+    .orderBy(order.field, order.order)
+    .limit(page.pageCount)
+    .offset(page.pageCount * (page.pageNo - 1));
+};
+const findUsersCountInGroup = async (groupId: string) => {
+  const res = await DBconnection.from(TABLE_USER)
+    .leftJoin(
+      TABLE_USER_IN_GROUP,
+      `${TABLE_USER_IN_GROUP}.user_id`,
+      `${TABLE_USER}.user_id`,
+    )
+    .where(DBconnection.raw(`${TABLE_USER_IN_GROUP}.group_id = '${groupId}'`))
+    .count();
+  return res[0].count;
 };
 
 const findUsersByNames = (name: string) => {
@@ -119,4 +156,6 @@ export const UserModel = {
   insertUser,
   updateVerifyCodeForLoginUser,
   updateUserInfo,
+  findUsersInGroup,
+  findUsersCountInGroup,
 };

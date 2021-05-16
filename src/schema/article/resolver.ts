@@ -99,6 +99,35 @@ export default {
         page,
       };
     },
+    getArticlesInGroup: async (
+      parent,
+      { group_id, page, sort },
+      { requestUser },
+      info,
+    ) => {
+      page = page ? page : defaultPage;
+      try {
+        return {
+          totalCount: ArticleService.getArticlesCountInGroup(
+            group_id,
+            requestUser.user_id,
+          ),
+          articles: ArticleService.getArticlesInGroup(
+            group_id,
+            requestUser.user_id,
+
+            sort,
+            page,
+          ),
+          page,
+        };
+      } catch (error) {}
+      return {
+        totalCount: 0,
+        articles: [],
+        page,
+      };
+    },
     getArticle: async (parent, { articleId }, { requestUser }, info) => {
       const result: ISchemaResult = {
         success: false,

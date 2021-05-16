@@ -34,6 +34,12 @@ type getUsersAccessibleArticlesResult{
     articles:[Article]
     page:pageInfo
 }
+type getArticlesInGroupResult{
+    totalCount:Int!
+    articles:[Article]
+    page:pageInfo
+}
+
 
 type createArticleResult{
     success: Boolean
@@ -89,6 +95,7 @@ extend type Query{
     getUsersAllArticles(sort:Order,page:Pagination):getUsersAllArticlesResult
     getUsersAllPublicArticles(sort:Order,page:Pagination):getUsersAllPublicArticlesResult
     getUsersAccessibleArticles(sort:Order,page:Pagination):getUsersAccessibleArticlesResult
+    getArticlesInGroup(group_id:ID!,sort:Order,page:Pagination):getArticlesInGroupResult
 }
 
 extend type Mutation{

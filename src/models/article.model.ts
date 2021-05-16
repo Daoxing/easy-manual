@@ -102,11 +102,46 @@ const getUsersAccessibleArticlesCount = async (userId: string) => {
     .count();
   return res[0].count;
 };
-const getArticleCountInGroup = async (groupId: string) => {
-  const res = await DBconnection(TABLE_ARTICLE)
-    .where({ group_id: groupId })
+const getArticlesCountInGroup = async (groupId: string, userId: string) => {
+  const res = await DBconnection.from(TABLE_ARTICLE)
+    .leftJoin(
+      TABLE_USER_IN_GROUP,
+      `${TABLE_USER_IN_GROUP}.group_id`,
+      `${TABLE_ARTICLE}.group_id`,
+    )
+    .where(
+      DBconnection.raw(`
+  ${TABLE_USER_IN_GROUP}.user_id = '${userId}'
+  AND ${TABLE_ARTICLE}.group_id = '${groupId}'
+  `),
+    )
     .count();
   return res[0].count;
+};
+const getArticlesInGroup = async (
+  groupId: string,
+  userId: string,
+  order: IOrder = defaultSort,
+  page: IPage = defaultPage,
+) => {
+  order = order ? order : defaultSort;
+  page = page ? page : defaultPage;
+  return DBconnection.select(`${TABLE_ARTICLE}.*`)
+    .from(TABLE_ARTICLE)
+    .leftJoin(
+      TABLE_USER_IN_GROUP,
+      `${TABLE_USER_IN_GROUP}.group_id`,
+      `${TABLE_ARTICLE}.group_id`,
+    )
+    .where(
+      DBconnection.raw(`
+  ${TABLE_USER_IN_GROUP}.user_id = '${userId}'
+  AND ${TABLE_ARTICLE}.group_id = '${groupId}'
+  `),
+    )
+    .orderBy(order.field, order.order)
+    .limit(page.pageCount)
+    .offset(page.pageCount * (page.pageNo - 1));
 };
 // Create
 const createArticle = (articleInfo: ICreateArticleInput) => {
@@ -138,7 +173,8 @@ export const ArticleModel = {
   getUsersAllPublicArticlesCount,
   getUsersAccessibleArticles,
   getUsersAccessibleArticlesCount,
-  getArticleCountInGroup,
+  getArticlesInGroup,
+  getArticlesCountInGroup,
   createArticle,
   updateArticle,
   deleteArticle,

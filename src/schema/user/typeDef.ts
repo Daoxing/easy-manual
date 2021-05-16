@@ -49,6 +49,12 @@ type findUserResult{
     message: String
 }
 
+type usersInGroupResult{
+    totalCount:Int!
+    users:[User]
+    page:pageInfo
+}
+
 input UpdateUserInput{
     user_nme:String,
     email_address:String,
@@ -66,6 +72,7 @@ extend type Query{
     me: User
     findUserById(id:ID!):findUserResult
     searchUsersByName(searchInfo:searchUsersByNameInput):searchUsersByNameResult
+    usersInGroup(group_id:ID!,sort:Order,page:Pagination):usersInGroupResult
 }
 
 extend type Mutation{

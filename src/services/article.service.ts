@@ -64,8 +64,16 @@ const getUsersAccessibleArticles = (
 const getUsersAccessibleArticlesCount = (userId: string) => {
   return ArticleModel.getUsersAccessibleArticlesCount(userId);
 };
-const getArticleCountInGroup = (groupId: string) => {
-  return ArticleModel.getArticleCountInGroup(groupId);
+const getArticlesInGroup = (
+  groupId: string,
+  requestingUserId: string,
+  sort: IOrder,
+  page: IPage,
+) => {
+  return ArticleModel.getArticlesInGroup(groupId, requestingUserId, sort, page);
+};
+const getArticlesCountInGroup = (groupId: string, requestingUserId: string) => {
+  return ArticleModel.getArticlesCountInGroup(groupId, requestingUserId);
 };
 // Create
 const createArticle = async (
@@ -158,7 +166,8 @@ export const ArticleService: any = {
   getUsersAllPublicArticlesCount,
   getUsersAccessibleArticles,
   getUsersAccessibleArticlesCount,
-  getArticleCountInGroup,
+  getArticlesCountInGroup,
+  getArticlesInGroup,
   createArticle,
   updateArticle,
   deleteArticle,
