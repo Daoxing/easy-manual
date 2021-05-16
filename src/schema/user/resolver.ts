@@ -1,6 +1,7 @@
 import { message } from '../../constants/message';
 import { ISchemaResult } from '../../types';
 import { GroupService, UserService } from '../../services';
+import { defaultPage } from '../../constants';
 
 export default {
   User: {
@@ -49,6 +50,26 @@ export default {
         result.message = error.message ? error.message : message.INTERNAL_ERROR;
       }
       return result;
+    },
+    usersInGroup: async (
+      parent,
+      { group_id, page, sort },
+      { requestUser },
+      info,
+    ) => {
+      page = page ? page : defaultPage;
+      try {
+        return {
+          totalCount: UserService.findUsersCountInGroup(group_id),
+          users: await UserService.findUsersInGroup(group_id, sort, page),
+          page,
+        };
+      } catch (error) {}
+      return {
+        totalCount: 0,
+        articles: [],
+        page,
+      };
     },
   },
   Mutation: {

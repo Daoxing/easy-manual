@@ -44,9 +44,15 @@ const getGroupsCountForUser = async (userId: string) => {
 
   return res[0].count;
 };
-
+const isJoinedGroup = async (groupId: string, userId: string) => {
+  return DBconnection(TABLE_USER_IN_GROUP)
+    .select('*')
+    .where({ group_id: groupId, user_id: userId })
+    .first();
+};
 export const GroupModel = {
   getGroupById,
   getGroupsForUser,
   getGroupsCountForUser,
+  isJoinedGroup,
 };

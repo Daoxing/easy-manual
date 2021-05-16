@@ -6,9 +6,9 @@ type Group{
     created_user: User
     all_joined_members: GroupMembers
     join_group_request: joinGroupRequest 
-    article_count:Int
     created_tms: Date
     updated_tms: Date
+    joined_group: joinedGroupStatusEnum
 }
 
 type GroupMembers{
@@ -68,6 +68,12 @@ type joinedGroupsResult{
     page:pageInfo
 }
 
+type groupInfoResult{
+    success: Boolean!
+    message: String
+    result: Group
+}
+
 input createGroupInput{
     group_nme:String!
     group_intro:String
@@ -97,8 +103,13 @@ input rejectUserToGroupInput{
 input searchGroupsByNameInput{
     name:String!
 }
-
+enum joinedGroupStatusEnum{
+    NOT_JOINED
+    APPLIED
+    JOINED
+}
 extend type Query{
+    groupInfo(group_id:ID!):groupInfoResult
     joinedGroups(sort:Order,page:Pagination):joinedGroupsResult
     searchGroupByName(searchInfo:searchGroupsByNameInput):searchGroupsByNameResult
 } 
