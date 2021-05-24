@@ -50,9 +50,20 @@ const isJoinedGroup = async (groupId: string, userId: string) => {
     .where({ group_id: groupId, user_id: userId })
     .first();
 };
+const removeUserFromGroup = async (groupId: string, userId: string) => {
+  return DBconnection(TABLE_USER_IN_GROUP)
+    .where({
+      user_id: userId,
+      group_id: groupId,
+    })
+    .delete()
+    .limit(1)
+    .returning('*');
+};
 export const GroupModel = {
   getGroupById,
   getGroupsForUser,
   getGroupsCountForUser,
   isJoinedGroup,
+  removeUserFromGroup,
 };

@@ -57,6 +57,12 @@ type deleteGroupResult{
     result: Group
 }
 
+type groupMutationReslt{
+    success: Boolean!
+    message: String
+    result: Group
+}
+
 type searchGroupsByNameResult{
     success: Boolean!
     result: [Group!]
@@ -124,6 +130,7 @@ extend type Mutation{
     rejectUserToGroup(rejectInfo:approveUserToGroupInput!): rejectUserToGroupResult
 
     deleteGroup(groupId:ID!):deleteGroupResult
+    leaveGroup(group_id:ID!):groupMutationReslt
 }
 
 `;

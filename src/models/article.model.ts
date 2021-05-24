@@ -162,7 +162,7 @@ const deleteArticle = (articleId: string) => {
   return DBconnection(TABLE_ARTICLE)
     .delete()
     .where({ article_id: articleId })
-    .first();
+    .limit(1);
 };
 
 export const ArticleModel = {
