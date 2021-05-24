@@ -197,6 +197,7 @@ export default {
         result.result = deletedArticle;
         result.message = message.DELETE_SUCCESS;
       } catch (error) {
+        console.log('-------->', error);
         result.message = error.message ? error.message : message.INTERNAL_ERROR;
       }
       return result;

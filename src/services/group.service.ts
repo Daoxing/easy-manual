@@ -13,9 +13,13 @@ const getGroupById = (groupId: string) => {
 const isJoinedGroup = (groupId: string, userId: string) => {
   return GroupModel.isJoinedGroup(groupId, userId);
 };
+const leaveGroup = (groupId: string, userId: string) => {
+  return GroupModel.removeUserFromGroup(groupId, userId);
+};
 export const GroupService: any = {
   getGroupsForUser,
   getGroupsForUserCount,
   getGroupById,
   isJoinedGroup,
+  leaveGroup,
 };

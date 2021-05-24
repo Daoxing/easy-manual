@@ -455,5 +455,21 @@ export default {
         : message.DELETE_FAIL;
       deleteGroupResult.result = trxResult ? findGroup : {};
     },
+    leaveGroup: async (parent, { group_id }, { requestUser }, info) => {
+      const result: ISchemaResult = {
+        success: false,
+        message: '',
+      };
+      try {
+        const deleteResult = await GroupService.leaveGroup(
+          group_id,
+          requestUser.user_id,
+        );
+        result.success = !!deleteResult;
+      } catch (error) {
+        result.message = error.message ? error.message : message.INTERNAL_ERROR;
+      }
+      return result;
+    },
   },
 };

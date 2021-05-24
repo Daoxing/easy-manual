@@ -91,7 +91,7 @@ input updateArticleInput{
 }
 
 extend type Query{
-    getArticle(articleId:String!):getArticleResult
+    getArticle(articleId:ID!):getArticleResult
     getUsersAllArticles(sort:Order,page:Pagination):getUsersAllArticlesResult
     getUsersAllPublicArticles(sort:Order,page:Pagination):getUsersAllPublicArticlesResult
     getUsersAccessibleArticles(sort:Order,page:Pagination):getUsersAccessibleArticlesResult
@@ -101,7 +101,7 @@ extend type Query{
 extend type Mutation{
     createArticle(articleInfo:createArticleInput): createArticleResult
     updateArticle(articleInfo:updateArticleInput): updateArticleResult
-    deleteArticle(articleId:String!):deleteArticleResult
+    deleteArticle(articleId:ID!):deleteArticleResult
 }
 
 `;
