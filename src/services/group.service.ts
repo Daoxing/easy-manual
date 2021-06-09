@@ -1,5 +1,5 @@
 import { GroupModel } from '../models/group.model';
-import { IOrder, IPage, IUser } from '../types';
+import { IOrder, IPage } from '../types';
 
 const getGroupsForUser = (userId: string, sort: IOrder, page: IPage) => {
   return GroupModel.getGroupsForUser(userId, sort, page);

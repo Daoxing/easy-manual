@@ -8,7 +8,8 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable()
       .primary()
       .defaultTo(knex.raw('uuid_generate_v4()'));
-    table.text('user_nme').nullable().defaultTo('');
+    table.text('user_nme').notNullable().defaultTo('').unique();
+    table.text('display_nme').nullable().defaultTo('');
     table.text('email_address').nullable().unique();
     table.text('phone_nbr').nullable().unique();
     table.text('icon_url').nullable();
@@ -17,7 +18,8 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamp('created_tms').notNullable().defaultTo(knex.fn.now());
     table.timestamp('updated_tms').notNullable().defaultTo(knex.fn.now());
     table.timestamp('last_login_tms').notNullable().defaultTo(knex.fn.now());
-    table.boolean('accept_terms').defaultTo(false);
+    table.boolean('read_recent_terms').defaultTo(false);
+    table.boolean('onboard').defaultTo(false);
     table.boolean('deleted').defaultTo(false);
     table.enu('gender', GENDER_OPTIONS).defaultTo(UNKNOWN);
   });

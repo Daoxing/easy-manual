@@ -54,7 +54,7 @@ const getUsersAllPublicArticlesCount = (userId: string) => {
   return ArticleModel.getUsersAllPublicArticlesCount(userId);
 };
 
-const getUsersAccessibleArticles = (
+const getUsersAccessibleArticles = async (
   userId: string,
   sort: IOrder,
   page: IPage,
@@ -151,11 +151,68 @@ const deleteArticle = async (
   if (foundArticle.created_user_id !== requestingUser.user_id) {
     throw new Error(message.NO_PERMISSION);
   }
-  const deleteChapter = await ArticleModel.deleteArticle(articleId);
-  if (!deleteChapter) {
+  const deleteArticle = await ArticleModel.deleteArticle(articleId);
+  if (!deleteArticle) {
     throw new Error(message.DELETE_FAIL);
   }
-  return deleteChapter;
+  return deleteArticle;
+};
+
+// Bookmark
+const bookmarkArticle = async (
+  articleId: string,
+  requestingUser: IRequestingUser,
+) => {
+  const foundArticle = await ArticleModel.getArticleById(articleId);
+  if (!foundArticle) {
+    throw new Error(message.NOT_FOUND_ARTICLE);
+  }
+
+  const bookmark = await ArticleModel.bookmarkArticle(
+    articleId,
+    requestingUser.user_id,
+  );
+  if (!bookmark) {
+    throw new Error(message.CREATE_FAIL);
+  }
+  return bookmark;
+};
+
+const removeArticleBookmark = async (
+  articleId: string,
+  requestingUser: IRequestingUser,
+) => {
+  const foundArticle = await ArticleModel.getArticleById(articleId);
+  if (!foundArticle) {
+    throw new Error(message.NOT_FOUND_ARTICLE);
+  }
+  const deletedBookmark = await ArticleModel.removeArticleBookmark(
+    articleId,
+    requestingUser.user_id,
+  );
+  if (!deletedBookmark) {
+    throw new Error(message.DELETE_FAIL);
+  }
+  return deletedBookmark;
+};
+
+const isArticleBookmarked = async (
+  articleId: string,
+  requestingUser: IRequestingUser,
+) => {
+  return ArticleModel.isArticleBookmarked(articleId, requestingUser.user_id);
+};
+
+const getUserBookmarkedArticlesCount = (userId: string) => {
+  return ArticleModel.getUserBookmarkedArticlesCount(userId);
+};
+
+const getUserBookmarkedArticles = async (
+  userId: string,
+  sort: IOrder,
+  page: IPage,
+) => {
+  return ArticleModel.getUserBookmarkedArticles(userId, sort, page);
 };
 
 export const ArticleService: any = {
@@ -171,4 +228,9 @@ export const ArticleService: any = {
   createArticle,
   updateArticle,
   deleteArticle,
+  bookmarkArticle,
+  removeArticleBookmark,
+  isArticleBookmarked,
+  getUserBookmarkedArticlesCount,
+  getUserBookmarkedArticles,
 };

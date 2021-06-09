@@ -8,7 +8,7 @@
     "db:create": "node scripts/createdb.js",
     "db:drop": "node scripts/dropdb.js",
     "prettier": "prettier --write ./src/**.ts ./src/**/**.ts ./migrations/**.ts ./seeds/**.ts",
-    "migrate:up": "ts-node ./node_modules/knex/bin/cli.js migrate:up",
+    "migrate:up": "ts-node ./node_modules/knex/bin/cli.js migrate:latest",
     "migrate:down": "ts-node ./node_modules/knex/bin/cli.js migrate:rollback",
     "migrate:make": "node ./node_modules/knex/bin/cli.js migrate:make ",
     "dev": "nodemon -e ts,tsx --exec ts-node ./src/index.ts ",

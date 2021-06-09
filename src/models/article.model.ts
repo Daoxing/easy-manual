@@ -3,6 +3,8 @@ import {
   defaultSort,
   TABLE_ARTICLE,
   TABLE_USER_IN_GROUP,
+  TABLE_USER_SAVED_ARTICLES,
+  VIEW_ARTICLE_USER_GROUP,
 } from '../constants';
 import { DBconnection } from '../database';
 import {
@@ -70,17 +72,17 @@ const getUsersAccessibleArticles = (
 ) => {
   order = order ? order : defaultSort;
   page = page ? page : defaultPage;
-  return DBconnection.select(`${TABLE_ARTICLE}.*`)
-    .from(TABLE_ARTICLE)
+  return DBconnection.select(`${VIEW_ARTICLE_USER_GROUP}.*`)
+    .from(VIEW_ARTICLE_USER_GROUP)
     .leftJoin(
       TABLE_USER_IN_GROUP,
       `${TABLE_USER_IN_GROUP}.group_id`,
-      `${TABLE_ARTICLE}.group_id`,
+      `${VIEW_ARTICLE_USER_GROUP}.group_id`,
     )
     .where(DBconnection.raw(`${TABLE_USER_IN_GROUP}.user_id = '${userId}'`))
     .orWhere(
-      DBconnection.raw(`${TABLE_ARTICLE}.group_id IS NULL 
-    AND ${TABLE_ARTICLE}.created_user_id = '${userId}'`),
+      DBconnection.raw(`${VIEW_ARTICLE_USER_GROUP}.group_id IS NULL 
+    AND ${VIEW_ARTICLE_USER_GROUP}.created_user_id = '${userId}'`),
     )
     .orderBy(order.field, order.order)
     .limit(page.pageCount)
@@ -88,16 +90,16 @@ const getUsersAccessibleArticles = (
 };
 
 const getUsersAccessibleArticlesCount = async (userId: string) => {
-  const res = await DBconnection.from(TABLE_ARTICLE)
+  const res = await DBconnection.from(VIEW_ARTICLE_USER_GROUP)
     .leftJoin(
       TABLE_USER_IN_GROUP,
       `${TABLE_USER_IN_GROUP}.group_id`,
-      `${TABLE_ARTICLE}.group_id`,
+      `${VIEW_ARTICLE_USER_GROUP}.group_id`,
     )
     .where(DBconnection.raw(`${TABLE_USER_IN_GROUP}.user_id = '${userId}'`))
     .orWhere(
-      DBconnection.raw(`${TABLE_ARTICLE}.group_id IS NULL 
-    AND ${TABLE_ARTICLE}.created_user_id = '${userId}'`),
+      DBconnection.raw(`${VIEW_ARTICLE_USER_GROUP}.group_id IS NULL 
+    AND ${VIEW_ARTICLE_USER_GROUP}.created_user_id = '${userId}'`),
     )
     .count();
   return res[0].count;
@@ -165,6 +167,67 @@ const deleteArticle = (articleId: string) => {
     .limit(1);
 };
 
+// Bookmark Article
+const bookmarkArticle = (articleId: string, userId: string) => {
+  return DBconnection(TABLE_USER_SAVED_ARTICLES)
+    .insert({
+      user_id: userId,
+      article_id: articleId,
+    })
+    .returning('*');
+};
+
+// Remove Bookmark Article
+const removeArticleBookmark = (articleId: string, userId: string) => {
+  return DBconnection(TABLE_USER_SAVED_ARTICLES)
+    .delete()
+    .where({ user_id: userId, article_id: articleId })
+    .limit(1);
+};
+
+// is Article Bookmarked
+const isArticleBookmarked = async (articleId: string, userId: string) => {
+  const res = await DBconnection(TABLE_USER_SAVED_ARTICLES)
+    .where({ user_id: userId, article_id: articleId })
+    .limit(1)
+    .count();
+  return res[0].count !== 0;
+};
+
+const getUserBookmarkedArticlesCount = async (userId: string) => {
+  const res = await DBconnection.from(TABLE_USER_SAVED_ARTICLES)
+    .leftJoin(
+      VIEW_ARTICLE_USER_GROUP,
+      `${TABLE_USER_SAVED_ARTICLES}.article_id`,
+      `${VIEW_ARTICLE_USER_GROUP}.article_id`,
+    )
+    .where(
+      DBconnection.raw(`${TABLE_USER_SAVED_ARTICLES}.user_id = '${userId}'`),
+    )
+    .count();
+  return res[0].count;
+};
+const getUserBookmarkedArticles = (
+  userId: string,
+  order: IOrder = defaultSort,
+  page: IPage = defaultPage,
+) => {
+  order = order ? order : defaultSort;
+  page = page ? page : defaultPage;
+  return DBconnection.select(`${VIEW_ARTICLE_USER_GROUP}.*`)
+    .from(TABLE_USER_SAVED_ARTICLES)
+    .leftJoin(
+      VIEW_ARTICLE_USER_GROUP,
+      `${TABLE_USER_SAVED_ARTICLES}.article_id`,
+      `${VIEW_ARTICLE_USER_GROUP}.article_id`,
+    )
+    .where(
+      DBconnection.raw(`${TABLE_USER_SAVED_ARTICLES}.user_id = '${userId}'`),
+    )
+    .orderBy(order.field, order.order)
+    .limit(page.pageCount)
+    .offset(page.pageCount * (page.pageNo - 1));
+};
 export const ArticleModel = {
   getArticleById,
   getUsersAllArticles,
@@ -178,4 +241,9 @@ export const ArticleModel = {
   createArticle,
   updateArticle,
   deleteArticle,
+  bookmarkArticle,
+  removeArticleBookmark,
+  isArticleBookmarked,
+  getUserBookmarkedArticlesCount,
+  getUserBookmarkedArticles,
 };

@@ -14,6 +14,7 @@ export const message = {
   INTERNAL_ERROR: 'Internal Error!',
   INVALID_INPUT: 'Invalid Input!',
   EMAIL_EXIST: 'Email has been used!',
+  USERNAME_EXIST: 'Username has been used!',
   WRONG_EMAIL_FORMAT: 'The email format is wrong!',
   WRONG_PHONE_NBR_FORMAT: 'The phone number format is wrong!',
   PHONE_NBR_EXIST: 'Phone number has been used!',

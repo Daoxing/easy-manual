@@ -86,6 +86,7 @@ const login = async (account: string) => {
       accountInfo,
       phoneNbrCodeUpdate,
     ) as NewUser;
+    newUserInfo.read_recent_terms = true;
     inserOrUpdate = (await UserModel.insertUser(newUserInfo))[0];
   } else {
     inserOrUpdate = (
@@ -106,11 +107,21 @@ const updateUser = async (userInfo: any, requestUser: IRequestingUser) => {
   if (!_.isUndefined(user_nme) && _.isEmpty(user_nme)) {
     throw new Error(message.NAME_SHOULD_NOT_NULL);
   }
+  if (user_nme) {
+    const checkUsernameResult = await UserModel.findOtherUsersByUniqueInfo(
+      { user_nme },
+      requestUser.user_id,
+    );
+    if (checkUsernameResult) {
+      throw new Error(message.USERNAME_EXIST);
+    }
+  }
+
   if (email_address) {
     if (!validator.isEmail(email_address)) {
       throw new Error(message.WRONG_EMAIL_FORMAT);
     }
-    const checkEmailResult = await UserModel.findOtherUsersByAccount(
+    const checkEmailResult = await UserModel.findOtherUsersByUniqueInfo(
       { email_address },
       requestUser.user_id,
     );
@@ -122,7 +133,7 @@ const updateUser = async (userInfo: any, requestUser: IRequestingUser) => {
     if (!validator.isMobilePhone(`${phone_nbr}`, 'zh-CN')) {
       throw new Error(message.WRONG_PHONE_NBR_FORMAT);
     }
-    const checkPhoneNbrResult = await UserModel.findOtherUsersByAccount(
+    const checkPhoneNbrResult = await UserModel.findOtherUsersByUniqueInfo(
       { phone_nbr },
       requestUser.user_id,
     );
@@ -131,6 +142,7 @@ const updateUser = async (userInfo: any, requestUser: IRequestingUser) => {
       throw new Error(message.PHONE_NBR_EXIST);
     }
   }
+  userInfo.onboard = true;
   const updateResult = await UserModel.updateUserInfo(
     userInfo,
     requestUser.user_id,

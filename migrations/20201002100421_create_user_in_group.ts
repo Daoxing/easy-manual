@@ -12,6 +12,8 @@ export async function up(knex: Knex): Promise<void> {
 
     table.timestamp('joined_tms').notNullable().defaultTo(knex.fn.now());
 
+    table.text('apply_message').nullable();
+
     table.primary(['user_id', 'group_id']);
   });
 }

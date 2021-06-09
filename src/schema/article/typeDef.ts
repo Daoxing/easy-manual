@@ -9,6 +9,7 @@ type Article{
     updated_tms: Date
     group:Group
     editable: Boolean
+    bookmarked: Boolean
 }
 
 type getArticleResult{
@@ -40,6 +41,12 @@ type getArticlesInGroupResult{
     page:pageInfo
 }
 
+type QueryArticlesResult{
+    totalCount:Int!
+    articles:[Article]
+    page:pageInfo
+}
+
 
 type createArticleResult{
     success: Boolean
@@ -58,6 +65,13 @@ type deleteArticleResult{
     result: Article
     message: String
 }
+
+type ArticleMutationResult{
+    success: Boolean
+    result: Article
+    message: String
+}
+
 type pageInfo{
     pageNo:Int!
     pageCount:Int!
@@ -96,12 +110,15 @@ extend type Query{
     getUsersAllPublicArticles(sort:Order,page:Pagination):getUsersAllPublicArticlesResult
     getUsersAccessibleArticles(sort:Order,page:Pagination):getUsersAccessibleArticlesResult
     getArticlesInGroup(group_id:ID!,sort:Order,page:Pagination):getArticlesInGroupResult
+    bookmarkedArticles(sort:Order,page:Pagination):QueryArticlesResult
 }
 
 extend type Mutation{
     createArticle(articleInfo:createArticleInput): createArticleResult
     updateArticle(articleInfo:updateArticleInput): updateArticleResult
     deleteArticle(articleId:ID!):deleteArticleResult
+    bookmarkArticle(articleId:ID!):ArticleMutationResult
+    removeArticleBookmark(articleId:ID!):ArticleMutationResult
 }
 
 `;

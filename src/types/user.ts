@@ -27,16 +27,21 @@ export interface LoginByEmail {
 export interface LoginByPhoneNbr {
   phone_nbr: string;
 }
+export interface usernameInfo {
+  user_nme: string;
+}
 
 export interface NewUser {
   email_address?: string;
   phone_nbr?: string;
   verify_code: string;
   verify_code_created_tms: Date;
+  read_recent_terms: Boolean;
 }
 
 export interface UpdateUserInfo {
   email_address?: string;
   phone_nbr?: string;
   user_nme?: string;
+  onboard?: boolean;
 }
