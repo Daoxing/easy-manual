@@ -2,6 +2,7 @@ export default `
 type User{
     user_id: String!
     user_nme:String,
+    display_nme:String,
     email_address:String,
     phone_nbr:String,
     icon_url:String,
@@ -10,13 +11,14 @@ type User{
     created_tms:Date,
     updated_tms:Date,
     last_login_tms:Date,
-    accept_terms:Boolean,
+    read_recent_terms:Boolean,
     deleted:Boolean,
     gender:GENDERENUM,
     my_groups:[Group],
     my_articles:[Article],
     my_accessible_articles:[Article],
     my_public_articles:[Article],
+    onboard:Boolean 
 }
 
 enum GENDERENUM{
@@ -57,6 +59,7 @@ type usersInGroupResult{
 
 input UpdateUserInput{
     user_nme:String,
+    display_nme:String,
     email_address:String,
     phone_nbr:String,
     gender:GENDERENUM,

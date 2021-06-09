@@ -3,6 +3,7 @@ import {
   defaultSort,
   TABLE_GROUP,
   TABLE_USER_IN_GROUP,
+  VIEW_GROUP_USER,
 } from '../constants';
 import { DBconnection } from '../database';
 import { IOrder, IPage } from '../types';
@@ -19,13 +20,8 @@ const getGroupById = (groupId: string) => {
 const getGroupsForUser = (userId: string, order: IOrder, page: IPage) => {
   order = order ? order : defaultSort;
   page = page ? page : defaultPage;
-  return DBconnection.select('group.*')
-    .from(TABLE_GROUP)
-    .leftJoin(
-      TABLE_USER_IN_GROUP,
-      `${TABLE_GROUP}.group_id`,
-      `${TABLE_USER_IN_GROUP}.group_id`,
-    )
+  return DBconnection.select('*')
+    .from(VIEW_GROUP_USER)
     .where({ user_id: userId, approved: true })
     .orderBy(order.field, order.order)
     .limit(page.pageCount)
@@ -33,12 +29,7 @@ const getGroupsForUser = (userId: string, order: IOrder, page: IPage) => {
 };
 
 const getGroupsCountForUser = async (userId: string) => {
-  const res = await DBconnection.from(TABLE_GROUP)
-    .leftJoin(
-      TABLE_USER_IN_GROUP,
-      `${TABLE_GROUP}.group_id`,
-      `${TABLE_USER_IN_GROUP}.group_id`,
-    )
+  const res = await DBconnection.from(VIEW_GROUP_USER)
     .where({ user_id: userId, approved: true })
     .count();
 

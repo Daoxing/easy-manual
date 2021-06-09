@@ -12,6 +12,7 @@ import {
   LoginByPhoneNbr,
   NewUser,
   UpdateUserInfo,
+  usernameInfo,
 } from '../types';
 import { generateRandomDigitalNumbers } from '../utils';
 
@@ -109,8 +110,8 @@ const findLoginUser = (accountInfo: LoginByEmail | LoginByPhoneNbr) => {
   return DBconnection(TABLE_USER).where(accountInfo).select('*').first();
 };
 
-const findOtherUsersByAccount = (
-  accountInfo: LoginByEmail | LoginByPhoneNbr,
+const findOtherUsersByUniqueInfo = (
+  accountInfo: LoginByEmail | LoginByPhoneNbr | usernameInfo,
   requestUserId: string,
 ) => {
   return DBconnection(TABLE_USER)
@@ -152,7 +153,7 @@ export const UserModel = {
   verifyCode,
   clearVerifyCode,
   findLoginUser,
-  findOtherUsersByAccount,
+  findOtherUsersByUniqueInfo,
   insertUser,
   updateVerifyCodeForLoginUser,
   updateUserInfo,

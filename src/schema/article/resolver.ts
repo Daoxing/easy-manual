@@ -7,8 +7,8 @@ import { ISchemaResult } from '../../types';
 
 export default {
   Article: {
-    created_user: (parent, args, { requestUser }, info) => {
-      return UserService.me(requestUser);
+    created_user: ({ created_user_id }, args, context, info) => {
+      return UserService.findUserById(created_user_id);
     },
     group: ({ group_id }, args, { requestUser }, info) => {
       return group_id
@@ -17,6 +17,9 @@ export default {
     },
     editable: ({ created_user_id }, args, { requestUser }, info) => {
       return created_user_id === requestUser.user_id;
+    },
+    bookmarked: ({ article_id }, args, { requestUser }, info) => {
+      return ArticleService.isArticleBookmarked(article_id, requestUser);
     },
   },
   Query: {
@@ -80,16 +83,15 @@ export default {
     ) => {
       page = page ? page : defaultPage;
       try {
-        const articles = await ArticleService.getUsersAccessibleArticles(
-          requestUser.user_id,
-          sort,
-          page,
-        );
         return {
           totalCount: ArticleService.getUsersAccessibleArticlesCount(
             requestUser.user_id,
           ),
-          articles: articles,
+          articles: ArticleService.getUsersAccessibleArticles(
+            requestUser.user_id,
+            sort,
+            page,
+          ),
           page,
         };
       } catch (error) {}
@@ -115,7 +117,32 @@ export default {
           articles: ArticleService.getArticlesInGroup(
             group_id,
             requestUser.user_id,
-
+            sort,
+            page,
+          ),
+          page,
+        };
+      } catch (error) {}
+      return {
+        totalCount: 0,
+        articles: [],
+        page,
+      };
+    },
+    bookmarkedArticles: async (
+      parent,
+      { group_id, page, sort },
+      { requestUser },
+      info,
+    ) => {
+      page = page ? page : defaultPage;
+      try {
+        return {
+          totalCount: ArticleService.getUserBookmarkedArticlesCount(
+            requestUser.user_id,
+          ),
+          articles: ArticleService.getUserBookmarkedArticles(
+            requestUser.user_id,
             sort,
             page,
           ),
@@ -197,7 +224,49 @@ export default {
         result.result = deletedArticle;
         result.message = message.DELETE_SUCCESS;
       } catch (error) {
-        console.log('-------->', error);
+        result.message = error.message ? error.message : message.INTERNAL_ERROR;
+      }
+      return result;
+    },
+    bookmarkArticle: async (parent, { articleId }, { requestUser }, info) => {
+      const result: ISchemaResult = {
+        success: false,
+        message: '',
+      };
+      try {
+        const bookmark = await ArticleService.bookmarkArticle(
+          articleId,
+          requestUser,
+        );
+        result.success = true;
+        // TODO load article by article_id
+        result.result = bookmark;
+        result.message = message.CREATE_SUCCESS;
+      } catch (error) {
+        result.message = error.message ? error.message : message.INTERNAL_ERROR;
+      }
+      return result;
+    },
+    removeArticleBookmark: async (
+      parent,
+      { articleId },
+      { requestUser },
+      info,
+    ) => {
+      const result: ISchemaResult = {
+        success: false,
+        message: '',
+      };
+      try {
+        const deletedBookmark = await ArticleService.removeArticleBookmark(
+          articleId,
+          requestUser,
+        );
+        result.success = true;
+        // TODO load article by article_id
+        result.result = deletedBookmark;
+        result.message = message.DELETE_SUCCESS;
+      } catch (error) {
         result.message = error.message ? error.message : message.INTERNAL_ERROR;
       }
       return result;
